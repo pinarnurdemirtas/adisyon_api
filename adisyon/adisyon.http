@@ -1,0 +1,6 @@
+@adisyon_HostAddress = http://localhost:5255
+
+### Tüm Adisyonları Listeleme
+GET {{adisyon_HostAddress}}/api/adisyon
+Accept: application/json
+
