@@ -18,23 +18,23 @@ public class RegisterController : ControllerBase
 
     // Kullanıcı kaydetme (Register)
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] Kisi kisi)
+    public async Task<IActionResult> Register([FromBody] Users users)
     {
         // Kullanıcı adı kontrolü
-        if (_context.Set<Kisi>().Any(k => k.username == kisi.username))
+        if (_context.Set<Users>().Any(k => k.username == users.username))
         {
             return BadRequest("Kullanıcı adı zaten kullanılıyor.");
         }
 
         // Şifreyi hash'le
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword(kisi.password);
-        kisi.password = passwordHash;
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(users.password);
+        users.password = passwordHash;
 
         // Varsayılan role (örneğin, "User") atanabilir
-        kisi.role = kisi.role ?? "garson";
+        users.role = users.role ?? "garson";
 
         // Kullanıcıyı veritabanına ekle
-        _context.Set<Kisi>().Add(kisi);
+        _context.Set<Users>().Add(users);
         await _context.SaveChangesAsync();
 
         return Ok("Kullanıcı başarıyla kaydedildi.");
@@ -45,7 +45,7 @@ public class RegisterController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         // Kullanıcıyı ID ile bul
-        var kisi = await _context.Set<Kisi>().FindAsync(id);
+        var kisi = await _context.Set<Users>().FindAsync(id);
 
         if (kisi == null)
         {
@@ -53,7 +53,7 @@ public class RegisterController : ControllerBase
         }
 
         // Kullanıcıyı sil
-        _context.Set<Kisi>().Remove(kisi);
+        _context.Set<Users>().Remove(kisi);
         await _context.SaveChangesAsync();
 
         return Ok("Kullanıcı başarıyla silindi.");

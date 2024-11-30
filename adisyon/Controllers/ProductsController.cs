@@ -7,10 +7,10 @@ namespace adisyon.Controllers;
     
 [Route("api/[controller]")]
 [ApiController]
-public class UrunController : ControllerBase
+public class ProductsController : ControllerBase
 {
     private readonly AdisyonDbContext _context;
-    public UrunController(AdisyonDbContext context)
+    public ProductsController(AdisyonDbContext context)
     {
         _context = context;
     }
@@ -18,7 +18,7 @@ public class UrunController : ControllerBase
     
     // GET: api/urun
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Urun>>> GetUrun()
+    public async Task<ActionResult<IEnumerable<Products>>> GetUrun()
     {
         return await _context.Products.ToListAsync();
     }
@@ -26,7 +26,7 @@ public class UrunController : ControllerBase
     
     // GET: api/urun/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult<Urun>> GetUrun(int id)
+    public async Task<ActionResult<Products>> GetUrun(int id)
     {
         var urun = await _context.Products.FindAsync(id);
         if (urun == null) return NotFound();
@@ -36,20 +36,20 @@ public class UrunController : ControllerBase
     
     // POST: api/urun
     [HttpPost]
-    public async Task<ActionResult<Urun>> PostUrun(Urun urun)
+    public async Task<ActionResult<Products>> PostUrun(Products products)
     {
-        _context.Products.Add(urun);
+        _context.Products.Add(products);
         await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetUrun), new { id = urun.Id }, urun);
+        return CreatedAtAction(nameof(GetUrun), new { id = products.Id }, products);
     }
 
     
     // PUT: api/urun/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUrun(int id, Urun urun)
+    public async Task<IActionResult> PutUrun(int id, Products products)
     {
-        if (id != urun.Id) return BadRequest();
-        _context.Entry(urun).State = EntityState.Modified;
+        if (id != products.Id) return BadRequest();
+        _context.Entry(products).State = EntityState.Modified;
         try
         {
             await _context.SaveChangesAsync();

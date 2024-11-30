@@ -117,3 +117,4 @@ C:\Users\pinar\OneDrive\Masaüstü\adisyon\adisyon\bin\Debug\net8.0\Microsoft.Id
 C:\Users\pinar\OneDrive\Masaüstü\adisyon\adisyon\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\pinar\OneDrive\Masaüstü\adisyon\adisyon\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\pinar\OneDrive\Masaüstü\adisyon\adisyon\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\pinar\OneDrive\Masaüstü\adisyon\adisyon\obj\Debug\net8.0\adisyon.sourcelink.json

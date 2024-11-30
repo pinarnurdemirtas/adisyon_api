@@ -1,6 +1,6 @@
 namespace adisyon.Models
 {
-    public class Kisi
+    public class Users
     {
         public int Id { get; set; }
         public string username { get; set; }

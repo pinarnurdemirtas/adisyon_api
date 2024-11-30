@@ -6,15 +6,21 @@ public class AdisyonDbContext : DbContext
 {
     public AdisyonDbContext(DbContextOptions<AdisyonDbContext> options) : base(options) { }
 
-    public DbSet<Urun> Products { get; set; } 
-    public DbSet<Siparis> Orders { get; set; } 
-    public DbSet<Detay> Order_details { get; set; } 
-    public DbSet<Kisi> Users { get; set; } 
+    public DbSet<Products> Products { get; set; } 
+    public DbSet<Orders> Orders { get; set; } 
+    public DbSet<OrderCash> Order_cash { get; set; } 
+    public DbSet<Users> Users { get; set; } 
     
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Detay>().HasNoKey();  
+        // Orders tablosunun birincil anahtarı
+        modelBuilder.Entity<Orders>()
+            .HasKey(o => o.Order_id);
+
+        // OrderCash tablosunun birincil anahtarı
+        modelBuilder.Entity<OrderCash>()
+            .HasKey(c => c.Cash_id);
     }
 
 }
