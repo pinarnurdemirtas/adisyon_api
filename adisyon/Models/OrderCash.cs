@@ -10,6 +10,9 @@ public class OrderCash
     public decimal Total_price { get; set; }
     public string Status { get; set; }
     public DateTime Order_date { get; set; }
+    
+    public int table_number { get; set; }
+
 }
 
 
