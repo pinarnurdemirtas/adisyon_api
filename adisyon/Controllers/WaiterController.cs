@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using adisyon.Data;
 using adisyon.Models;
+using Microsoft.AspNetCore.Authorization;
 namespace adisyon.Controller;
 
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "kasa")]
+
 public class WaiterController : ControllerBase
 {
     private readonly AdisyonDbContext _context;

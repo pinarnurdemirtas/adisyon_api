@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using adisyon.Data;
+using Microsoft.AspNetCore.Authorization;
 namespace adisyon.Controller;
 
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "kasa")]
+
 public class CashController : ControllerBase
 {
     private readonly AdisyonDbContext _context;

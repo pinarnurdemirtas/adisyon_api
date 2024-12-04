@@ -3128,11 +3128,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\pinar\\OneDrive\\Masaüstü\\adisyon\\adisyon\\adisyon.csproj",
+      "projectUniqueName": "C:\\Users\\pinar\\RiderProjects\\adisyon_api\\adisyon\\adisyon.csproj",
       "projectName": "adisyon",
-      "projectPath": "C:\\Users\\pinar\\OneDrive\\Masaüstü\\adisyon\\adisyon\\adisyon.csproj",
+      "projectPath": "C:\\Users\\pinar\\RiderProjects\\adisyon_api\\adisyon\\adisyon.csproj",
       "packagesPath": "C:\\Users\\pinar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\pinar\\OneDrive\\Masaüstü\\adisyon\\adisyon\\obj\\",
+      "outputPath": "C:\\Users\\pinar\\RiderProjects\\adisyon_api\\adisyon\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

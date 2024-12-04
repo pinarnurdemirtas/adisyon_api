@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "i8vnwALuVhU=",
+  "dgSpecHash": "h1LLyV7tais=",
   "success": true,
-  "projectFilePath": "C:\\Users\\pinar\\OneDrive\\Masaüstü\\adisyon\\adisyon\\adisyon.csproj",
+  "projectFilePath": "C:\\Users\\pinar\\RiderProjects\\adisyon_api\\adisyon\\adisyon.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\pinar\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\pinar\\.nuget\\packages\\bouncycastle.cryptography\\2.3.1\\bouncycastle.cryptography.2.3.1.nupkg.sha512",

@@ -2,11 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using adisyon.Data;
 using adisyon.Models;
+using Microsoft.AspNetCore.Authorization;
 namespace adisyon.Controller;
 
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "mutfak")]
+
 public class KitchenController : ControllerBase
 {
     private readonly AdisyonDbContext _context;
