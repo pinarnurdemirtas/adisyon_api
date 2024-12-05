@@ -23,8 +23,28 @@ public class KitchenController : ControllerBase
     [HttpGet("list")]
     public async Task<IActionResult> GetOrders()
     {
-        var orders = await _context.Orders.ToListAsync();
-        return Ok(orders);
+        try
+        {
+            // Make sure to handle nullable fields like 'Product_name'
+            var orders = await _context.Orders
+                .Select(order => new
+                {
+                    order.Order_id,
+                    order.Product_id,
+                    ProductName = order.Product_name ?? "Unknown", // Handle nullable Product_name
+                    order.Quantity,
+                    order.Table_number,
+                    order.Status,
+                    order.Order_date
+                })
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred: {ex.Message}");
+        }
     }
 
     
@@ -53,7 +73,7 @@ public class KitchenController : ControllerBase
             Total_price = productPrice * order.Quantity,
             Status = "hazırlandı",
             Order_date = order.Order_date,
-            table_number = order.Table_number 
+            table_number = order.Table_number,
         }; 
         using (var transaction = await _context.Database.BeginTransactionAsync())
         {

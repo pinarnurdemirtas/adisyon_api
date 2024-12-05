@@ -8,5 +8,6 @@ public class Orders
     public int Quantity { get; set; }
     public string Status { get; set; }
     public DateTime Order_date { get; set; }
+    public string Product_name { get; set; }
 
 }

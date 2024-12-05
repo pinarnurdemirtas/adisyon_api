@@ -7,7 +7,7 @@ namespace adisyon.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "kasa")]
+[Authorize(Roles = "garson")]
 
 public class WaiterController : ControllerBase
 {
@@ -23,10 +23,24 @@ public class WaiterController : ControllerBase
     public async Task<IActionResult> CreateOrder([FromBody] Orders order)
     {
         if (order == null) return BadRequest("Order data is missing.");
+
+        // Ürün ID'sine göre Product tablosundan ürün alınması
+        var product = await _context.Products.FindAsync(order.Product_id);
+
+        if (product == null)
+        {
+            return NotFound("Product not found.");
+        }
+
+        // Product_name null kontrolü yapılır ve null değilse atanır
+        order.Product_name = product.Name ?? "Unknown";  // Eğer product.Name null ise "Unknown" kullanılır.
+
         order.Status = "hazırlanıyor";
         order.Order_date = DateTime.Now;
+
         await _context.Orders.AddAsync(order);
         await _context.SaveChangesAsync();
         return Ok(new { message = "Order created successfully.", order });
     }
+
 }
