@@ -2,45 +2,38 @@ using Microsoft.AspNetCore.Mvc;
 using adisyon.Data;
 using adisyon.Models;
 using Microsoft.AspNetCore.Authorization;
-namespace adisyon.Controller;
 
-
-[ApiController]
-[Route("api/[controller]")]
-[Authorize(Roles = "garson")]
-
-public class WaiterController : ControllerBase
+namespace adisyon.Controller
 {
-    private readonly AdisyonDbContext _context;
-    public WaiterController(AdisyonDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "garson")]
+    public class WaiterController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly WaiterRepository _waiterRepository;
 
-        
-    // Yeni sipariş oluşturma
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateOrder([FromBody] Orders order)
-    {
-        if (order == null) return BadRequest("Order data is missing.");
-
-        // Ürün ID'sine göre Product tablosundan ürün alınması
-        var product = await _context.Products.FindAsync(order.Product_id);
-
-        if (product == null)
+        public WaiterController(WaiterRepository waiterRepository)
         {
-            return NotFound("Product not found.");
+            _waiterRepository = waiterRepository;
         }
 
-        // Product_name null kontrolü yapılır ve null değilse atanır
-        order.Product_name = product.Name ?? "Unknown";  // Eğer product.Name null ise "Unknown" kullanılır.
+        // Yeni sipariş oluşturma
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateOrder([FromBody] Orders order)
+        {
+            if (order == null)
+            {
+                return BadRequest("Order data is missing.");
+            }
 
-        order.Status = "hazırlanıyor";
-        order.Order_date = DateTime.Now;
+            var createdOrder = await _waiterRepository.CreateOrderAsync(order);
 
-        await _context.Orders.AddAsync(order);
-        await _context.SaveChangesAsync();
-        return Ok(new { message = "Order created successfully.", order });
+            if (createdOrder == null)
+            {
+                return NotFound("Product not found.");
+            }
+
+            return Ok(new { message = "Order created successfully.", createdOrder });
+        }
     }
-
 }

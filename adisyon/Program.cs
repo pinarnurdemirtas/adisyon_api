@@ -15,6 +15,11 @@ builder.Services.AddDbContext<AdisyonDbContext>(options =>
 
 // JWT doğrulama için güvenlik servislerini ekliyoruz
 builder.Services.AddScoped<adisyon.Security>();
+builder.Services.AddScoped<UserRepository>(); // UserRepository'i Scoped olarak ekledik
+builder.Services.AddScoped<WaiterRepository>(); // UserRepository'i Scoped olarak ekledik
+builder.Services.AddScoped<KitchenRepository>(); // UserRepository'i Scoped olarak ekledik
+builder.Services.AddScoped<CashRepository>(); // UserRepository'i Scoped olarak ekledik
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddAuthentication(options =>

@@ -1,54 +1,48 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using adisyon.Data;
 using Microsoft.AspNetCore.Authorization;
-namespace adisyon.Controller;
+using adisyon.Data;
 
 
-[ApiController]
-[Route("api/[controller]")]
-[Authorize(Roles = "kasa")]
-
-public class CashController : ControllerBase
+namespace adisyon.Controller
 {
-    private readonly AdisyonDbContext _context;
-    public CashController(AdisyonDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "kasa")]
+    public class CashController : ControllerBase
     {
-        _context = context;
-    }
-    
-    
-    // Belirtilen masa numarasına ait tüm siparişleri bulma
-    [HttpGet("list-by-table/{tableNumber}")]
-    public async Task<IActionResult> GetOrdersByTable(int tableNumber)
-    {
-        var orderCashList = await _context.Order_cash
-            .Where(oc => oc.table_number == tableNumber)
-            .ToListAsync();
-        if (orderCashList == null || !orderCashList.Any())
-        {
-            return NotFound("No orders found for this table.");
-        }
-        return Ok(orderCashList);
-    }
+        private readonly CashRepository _cashRepository;
 
-        
-    // Siparişlerin durumunu "ödendi" olarak güncelleme
-    [HttpPut("mark-paid/{tableNumber}")]
-    public async Task<IActionResult> MarkOrdersAsPaid(int tableNumber)
-    {
-        var ordersToUpdate = await _context.Order_cash
-            .Where(oc => oc.table_number == tableNumber && oc.Status != "ödendi")
-            .ToListAsync();
-        if (ordersToUpdate == null || !ordersToUpdate.Any())
+        public CashController(CashRepository cashRepository)
         {
-            return NotFound("No orders found for this table or all orders are already marked as paid.");
+            _cashRepository = cashRepository;
         }
-        foreach (var order in ordersToUpdate)
+
+        // Belirtilen masa numarasına ait tüm siparişleri bulma
+        [HttpGet("list-by-table/{tableNumber}")]
+        public async Task<IActionResult> GetOrdersByTable(int tableNumber)
         {
-            order.Status = "ödendi";
+            var orderCashList = await _cashRepository.GetOrdersByTableAsync(tableNumber);
+            
+            if (orderCashList == null || !orderCashList.Any())
+            {
+                return NotFound("No orders found for this table.");
+            }
+            
+            return Ok(orderCashList);
         }
-        await _context.SaveChangesAsync();
-        return Ok(new { message = "Orders marked as paid.", ordersToUpdate });
+
+        // Siparişlerin durumunu "ödendi" olarak güncelleme
+        [HttpPut("mark-paid/{tableNumber}")]
+        public async Task<IActionResult> MarkOrdersAsPaid(int tableNumber)
+        {
+            var success = await _cashRepository.MarkOrdersAsPaidAsync(tableNumber);
+            
+            if (!success)
+            {
+                return NotFound("No orders found for this table or all orders are already marked as paid.");
+            }
+            
+            return Ok(new { message = "Orders marked as paid." });
+        }
     }
 }

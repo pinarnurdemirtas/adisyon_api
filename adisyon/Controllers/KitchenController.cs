@@ -1,97 +1,59 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using adisyon.Data;
-using adisyon.Models;
 using Microsoft.AspNetCore.Authorization;
-namespace adisyon.Controller;
 
-
-[ApiController]
-[Route("api/[controller]")]
-[Authorize(Roles = "mutfak")]
-
-public class KitchenController : ControllerBase
+namespace adisyon.Controller
 {
-    private readonly AdisyonDbContext _context;
-    public KitchenController(AdisyonDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "mutfak")]
+    public class KitchenController : ControllerBase
     {
-        _context = context;
-    }
-    
-    
-    // Hazırlanan siparişleri listeleme
-    [HttpGet("list")]
-    public async Task<IActionResult> GetOrders()
-    {
-        try
-        {
-            // Make sure to handle nullable fields like 'Product_name'
-            var orders = await _context.Orders
-                .Select(order => new
-                {
-                    order.Order_id,
-                    order.Product_id,
-                    ProductName = order.Product_name ?? "Unknown", // Handle nullable Product_name
-                    order.Quantity,
-                    order.Table_number,
-                    order.Status,
-                    order.Order_date
-                })
-                .ToListAsync();
+        private readonly KitchenRepository _kitchenRepository;
 
-            return Ok(orders);
-        }
-        catch (Exception ex)
+        public KitchenController(KitchenRepository kitchenRepository)
         {
-            return StatusCode(500, $"An error occurred: {ex.Message}");
+            _kitchenRepository = kitchenRepository;
         }
-    }
 
-    
-    // Helper: Ürün fiyatını bulma
-    private async Task<decimal> GetProductPrice(int productId)
-    {
-        var product = await _context.Products.FindAsync(productId);
-        return product?.Price ?? 0;
-    } 
-    
-    
-    // Sipariş durumunu 'Hazırlandı' olarak güncelleme
-    [HttpPut("update-status/{id}")]
-    public async Task<IActionResult> UpdateOrderStatus(int id)
-    {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null) return NotFound("Order not found.");
-        order.Status = "hazırlandı";
-        var productPrice = await GetProductPrice(order.Product_id);
-        var orderCash = new OrderCash()
-        {
-            Order_id = order.Order_id,
-            Product_id = order.Product_id,
-            Quantity = order.Quantity,
-            Product_price = productPrice,
-            Total_price = productPrice * order.Quantity,
-            Status = "hazırlandı",
-            Order_date = order.Order_date,
-            table_number = order.Table_number,
-        }; 
-        using (var transaction = await _context.Database.BeginTransactionAsync())
+        // Hazırlanan siparişleri listeleme
+        [HttpGet("list")]
+        public async Task<IActionResult> GetOrders()
         {
             try
             {
-                await _context.Order_cash.AddAsync(orderCash);
-                
-                _context.Orders.Remove(order);
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                var orders = await _kitchenRepository.GetOrdersAsync();
+                return Ok(orders);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-        } 
-        return Ok(new { message = "Order status updated and moved to OrderCash.", orderCash });
         }
+
+        // Sipariş durumunu 'Hazırlandı' olarak güncelleme
+        [HttpPut("update-status/{id}")]
+        public async Task<IActionResult> UpdateOrderStatus(int id)
+        {
+            try
+            {
+                var updatedOrder = await _kitchenRepository.UpdateOrderStatusAsync(id);
+
+                if (updatedOrder == null)
+                {
+                    return NotFound($"Order with ID {id} not found.");
+                }
+
+                return Ok(new
+                {
+                    Message = $"Order with ID {id} has been updated to 'Hazırlandı'.",
+                    Order = updatedOrder
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+    }
 }

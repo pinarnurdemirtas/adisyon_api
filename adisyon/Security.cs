@@ -11,10 +11,12 @@ public class Security
 {
     private readonly IConfiguration _configuration;
 
+
     // Constructor to inject IConfiguration
     public Security(IConfiguration configuration)
     {
         _configuration = configuration;
+        
     }
 
     internal string CreateToken(Users user)
