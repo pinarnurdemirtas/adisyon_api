@@ -10,18 +10,18 @@ namespace adisyon.Controller
     [Authorize(Roles = "kasa")]
     public class CashController : ControllerBase
     {
-        private readonly CashRepository _cashRepository;
+        private readonly CashDAO _cashDao;
 
-        public CashController(CashRepository cashRepository)
+        public CashController(CashDAO cashDao)
         {
-            _cashRepository = cashRepository;
+            _cashDao = cashDao;
         }
 
         // Belirtilen masa numarasına ait tüm siparişleri bulma
         [HttpGet("list-by-table/{tableNumber}")]
         public async Task<IActionResult> GetOrdersByTable(int tableNumber)
         {
-            var orderCashList = await _cashRepository.GetOrdersByTableAsync(tableNumber);
+            var orderCashList = await _cashDao.GetOrdersByTableAsync(tableNumber);
             
             if (orderCashList == null || !orderCashList.Any())
             {
@@ -35,7 +35,7 @@ namespace adisyon.Controller
         [HttpPut("mark-paid/{tableNumber}")]
         public async Task<IActionResult> MarkOrdersAsPaid(int tableNumber)
         {
-            var success = await _cashRepository.MarkOrdersAsPaidAsync(tableNumber);
+            var success = await _cashDao.MarkOrdersAsPaidAsync(tableNumber);
             
             if (!success)
             {

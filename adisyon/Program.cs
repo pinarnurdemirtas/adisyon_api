@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using adisyon.Data;
-using adisyon.Helpers;
-using Microsoft.Extensions.Options;
 using System.Text;
+using adisyon.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,12 +12,13 @@ builder.Services.AddDbContext<AdisyonDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), 
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-// JWT doğrulama için güvenlik servislerini ekliyoruz
 builder.Services.AddScoped<adisyon.Security>();
-builder.Services.AddScoped<UserRepository>(); // UserRepository'i Scoped olarak ekledik
-builder.Services.AddScoped<WaiterRepository>(); // UserRepository'i Scoped olarak ekledik
-builder.Services.AddScoped<KitchenRepository>(); // UserRepository'i Scoped olarak ekledik
-builder.Services.AddScoped<CashRepository>(); // UserRepository'i Scoped olarak ekledik
+builder.Services.AddScoped<UserDAO>(); 
+builder.Services.AddScoped<WaiterDAO>(); 
+builder.Services.AddScoped<KitchenDAO>(); 
+builder.Services.AddScoped<CashDAO>();
+builder.Services.AddScoped<MenuDAO>();
+
 
 builder.Services.AddAuthorization();
 
@@ -48,7 +48,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Diğer servisleri ekliyoruz
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -64,7 +63,6 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer"
     });
 
-    // Swagger'a güvenlik gereksinimi ekliyoruz
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
@@ -83,7 +81,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Swagger ve middleware kullanımı
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -91,8 +88,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("AllowAll");
 
-app.UseAuthentication(); // Authentication middleware ekliyoruz
-app.UseAuthorization();  // Authorization middleware ekliyoruz
+app.UseAuthentication(); 
+app.UseAuthorization();  
 
 app.MapControllers();
 app.Run();

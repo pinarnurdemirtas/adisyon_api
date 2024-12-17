@@ -9,13 +9,13 @@ namespace adisyon.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserRepository _userRepository;
+        private readonly UserDAO _userDao;
         private readonly Security _security;
 
         // Constructor'da UserRepository ve SecurityService bağımlılıklarını alıyoruz
-        public UsersController(UserRepository userRepository, Security security)
+        public UsersController(UserDAO userDao, Security security)
         {
-            _userRepository = userRepository;
+            _userDao = userDao;
             _security = security;
         }
 
@@ -28,7 +28,7 @@ namespace adisyon.Controllers
                 return BadRequest(new { message = "Invalid request. User information is missing." });
             }
 
-            var user = await _userRepository.GetUserByUsernameAsync(loginUser.Username);
+            var user = await _userDao.GetUserByUsernameAsync(loginUser.Username);
 
             if (user == null)
             {
@@ -59,7 +59,7 @@ namespace adisyon.Controllers
             }
 
             // Kullanıcı adı zaten alınmış mı kontrol edelim
-            var existingUser = await _userRepository.GetUserByUsernameAsync(registerUser.Username);
+            var existingUser = await _userDao.GetUserByUsernameAsync(registerUser.Username);
             if (existingUser != null)
             {
                 return BadRequest(new { message = "Username is already taken." });
@@ -81,8 +81,8 @@ namespace adisyon.Controllers
                 Role = registerUser.Role,
             };
 
-            await _userRepository.AddUserAsync(newUser);
-            await _userRepository.SaveChangesAsync();
+            await _userDao.AddUserAsync(newUser);
+            await _userDao.SaveChangesAsync();
 
             return Ok(new { message = "User registered successfully." });
         }
@@ -93,7 +93,7 @@ namespace adisyon.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             // Kullanıcıyı id ile veritabanından alıyoruz
-            var user = await _userRepository.GetUserByIdAsync(id);
+            var user = await _userDao.GetUserByIdAsync(id);
 
             if (user == null)
             {
@@ -101,8 +101,8 @@ namespace adisyon.Controllers
             }
 
             // Kullanıcıyı siliyoruz
-            await _userRepository.DeleteUserAsync(user);
-            await _userRepository.SaveChangesAsync();
+            await _userDao.DeleteUserAsync(user);
+            await _userDao.SaveChangesAsync();
 
             return Ok(new { message = "User deleted successfully." });
         }

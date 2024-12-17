@@ -14,13 +14,10 @@ public class AdisyonDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Orders tablosunun birincil anahtarı
         modelBuilder.Entity<Orders>()
             .HasKey(o => o.Order_id);
 
-        // OrderCash tablosunun birincil anahtarı
         modelBuilder.Entity<OrderCash>()
             .HasKey(c => c.Cash_id);
     }
-
 }

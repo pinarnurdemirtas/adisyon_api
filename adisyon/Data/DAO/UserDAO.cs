@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace adisyon.Data
 {
-    public class UserRepository
+    public class UserDAO
     {
         private readonly AdisyonDbContext _context;
 
-        public UserRepository(AdisyonDbContext context)
+        public UserDAO(AdisyonDbContext context)
         {
             _context = context;
         }

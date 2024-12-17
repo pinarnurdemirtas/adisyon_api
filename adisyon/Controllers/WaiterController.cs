@@ -10,30 +10,31 @@ namespace adisyon.Controller
     [Authorize(Roles = "garson")]
     public class WaiterController : ControllerBase
     {
-        private readonly WaiterRepository _waiterRepository;
+        private readonly WaiterDAO _waiterDao;
 
-        public WaiterController(WaiterRepository waiterRepository)
+        public WaiterController(WaiterDAO waiterDao)
         {
-            _waiterRepository = waiterRepository;
+            _waiterDao = waiterDao;
         }
 
         // Yeni sipariş oluşturma
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateOrder([FromBody] Orders order)
+        [HttpPost("create-order")]
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrder order)
         {
-            if (order == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Order data is missing.");
+                return BadRequest(ModelState);
             }
 
-            var createdOrder = await _waiterRepository.CreateOrderAsync(order);
+            var createdOrder = await _waiterDao.CreateOrderAsync(order);
 
             if (createdOrder == null)
             {
-                return NotFound("Product not found.");
+                return NotFound("Ürün bulunamadı");
             }
 
-            return Ok(new { message = "Order created successfully.", createdOrder });
+            return Ok(createdOrder);
         }
+
     }
 }

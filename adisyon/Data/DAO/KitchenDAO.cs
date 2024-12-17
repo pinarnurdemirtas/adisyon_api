@@ -4,33 +4,27 @@ using adisyon.Models;
 
 namespace adisyon.Data
 {
-    public class KitchenRepository
+    public class KitchenDAO
     {
         private readonly AdisyonDbContext _context;
 
-        public KitchenRepository(AdisyonDbContext context)
+        public KitchenDAO(AdisyonDbContext context)
         {
             _context = context;
         }
 
-        // Hazırlanan siparişleri listeleme
-        public async Task<List<Orders>> GetOrdersAsync()
+        // Hazırlanan siparişleri listeleme (KitchenOrderDTO ile)
+        public async Task<List<KitchenOrders>> GetOrdersAsync()
         {
             return await _context.Orders
-                .Select(order => new Orders
+                .Select(order => new KitchenOrders
                 {
-                    Order_id = order.Order_id,
-                    Product_id = order.Product_id,
-                    Product_name = order.Product_name ?? "Unknown", // Nullable field kontrolü
+                    Product_name = order.Product_name ?? "Unknown",
                     Quantity = order.Quantity,
-                    Table_number = order.Table_number,
-                    Status = order.Status,
-                    Order_date = order.Order_date
+                    Status = order.Status
                 })
                 .ToListAsync();
         }
-
-        
         
         private async Task<decimal> GetProductPrice(int productId)
         {

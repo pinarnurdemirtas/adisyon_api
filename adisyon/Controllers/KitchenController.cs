@@ -9,11 +9,11 @@ namespace adisyon.Controller
     [Authorize(Roles = "mutfak")]
     public class KitchenController : ControllerBase
     {
-        private readonly KitchenRepository _kitchenRepository;
+        private readonly KitchenDAO _kitchenDao;
 
-        public KitchenController(KitchenRepository kitchenRepository)
+        public KitchenController(KitchenDAO kitchenDao)
         {
-            _kitchenRepository = kitchenRepository;
+            _kitchenDao = kitchenDao;
         }
 
         // Hazırlanan siparişleri listeleme
@@ -22,7 +22,7 @@ namespace adisyon.Controller
         {
             try
             {
-                var orders = await _kitchenRepository.GetOrdersAsync();
+                var orders = await _kitchenDao.GetOrdersAsync();
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -37,7 +37,7 @@ namespace adisyon.Controller
         {
             try
             {
-                var updatedOrder = await _kitchenRepository.UpdateOrderStatusAsync(id);
+                var updatedOrder = await _kitchenDao.UpdateOrderStatusAsync(id);
 
                 if (updatedOrder == null)
                 {

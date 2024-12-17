@@ -3,17 +3,17 @@ using adisyon.Models;
 
 namespace adisyon.Data
 {
-    public class CashRepository
+    public class CashDAO
     {
         private readonly AdisyonDbContext _context;
 
-        // Constructor'da AdisyonDbContext'i alıyoruz
-        public CashRepository(AdisyonDbContext context)
+        // AdisyonDbContext'i alan yapıcı
+        public CashDAO(AdisyonDbContext context)
         {
             _context = context;
         }
 
-        // Belirtilen masa numarasına ait tüm siparişleri almak için metod
+        // Belirtilen masa numarasına ait tüm siparişleri alan metod
         public async Task<List<OrderCash>> GetOrdersByTableAsync(int tableNumber)
         {
             return await _context.Order_cash
@@ -21,7 +21,7 @@ namespace adisyon.Data
                 .ToListAsync();
         }
 
-        // Siparişlerin durumunu "ödendi" olarak güncellemek için metod
+        // Siparişlerin durumunu "ödendi" olarak güncelleyen metod
         public async Task<bool> MarkOrdersAsPaidAsync(int tableNumber)
         {
             var ordersToUpdate = await _context.Order_cash
