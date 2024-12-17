@@ -13,24 +13,34 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // Belirtilen masa numarasına ait tüm siparişleri alan metod
+        // Belirtilen masa numarasına ait "Hazırlandı" durumundaki siparişleri alan metod
         public async Task<List<OrderCash>> GetOrdersByTableAsync(int tableNumber)
         {
             return await _context.Order_cash
-                .Where(oc => oc.table_number == tableNumber)
+                .Where(oc => oc.table_number == tableNumber && oc.Status == "Hazırlandı")
                 .ToListAsync();
         }
 
-        // Siparişlerin durumunu "ödendi" olarak güncelleyen metod
+        // "Hazırlandı" durumundaki masaların numaralarını getiren metod
+        public async Task<List<int>> GetTablesWithReadyOrdersAsync()
+        {
+            return await _context.Order_cash
+                .Where(oc => oc.Status == "Hazırlandı")
+                .Select(oc => oc.table_number)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        // Siparişlerin durumunu "Ödendi" olarak güncelleyen metod
         public async Task<bool> MarkOrdersAsPaidAsync(int tableNumber)
         {
             var ordersToUpdate = await _context.Order_cash
-                .Where(oc => oc.table_number == tableNumber && oc.Status != "Ödendi")
+                .Where(oc => oc.table_number == tableNumber && oc.Status == "Hazırlandı")
                 .ToListAsync();
 
             if (ordersToUpdate == null || !ordersToUpdate.Any())
             {
-                return false; // Eğer siparişler yoksa veya hepsi zaten "ödendi" durumundaysa
+                return false; // Eğer siparişler yoksa veya hepsi "Hazırlandı" değilse
             }
 
             foreach (var order in ordersToUpdate)
