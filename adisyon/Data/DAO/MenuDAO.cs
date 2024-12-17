@@ -1,4 +1,3 @@
-using adisyon.Data;
 using adisyon.Models;
 using Microsoft.EntityFrameworkCore;
 

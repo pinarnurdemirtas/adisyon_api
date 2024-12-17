@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using adisyon.Models;
+
 
 namespace adisyon.Data
 {
@@ -7,40 +7,37 @@ namespace adisyon.Data
     {
         private readonly AdisyonDbContext _context;
 
-        // AdisyonDbContext'i alan yapıcı
         public CashDAO(AdisyonDbContext context)
         {
             _context = context;
         }
 
         // Belirtilen masa numarasına ait "Hazırlandı" durumundaki siparişleri alan metod
-        public async Task<List<OrderCash>> GetOrdersByTableAsync(int tableNumber)
+        public async Task<object> GetOrdersByTableAsync(int tableNumber)
         {
-            return await _context.Order_cash
-                .Where(oc => oc.table_number == tableNumber && oc.Status == "Hazırlandı")
+            var orders = await _context.Order_cash
+                .Where(oc => oc.Table_number == tableNumber && oc.Status == "Hazırlandı")
                 .ToListAsync();
-        }
 
-        // "Hazırlandı" durumundaki masaların numaralarını getiren metod
-        public async Task<List<int>> GetTablesWithReadyOrdersAsync()
-        {
-            return await _context.Order_cash
-                .Where(oc => oc.Status == "Hazırlandı")
-                .Select(oc => oc.table_number)
-                .Distinct()
-                .ToListAsync();
+            if (orders == null || !orders.Any())
+            {
+                return Constants.TableEmpty;
+            }
+
+            return orders; 
         }
+        
 
         // Siparişlerin durumunu "Ödendi" olarak güncelleyen metod
-        public async Task<bool> MarkOrdersAsPaidAsync(int tableNumber)
+        public async Task<string> MarkOrdersAsPaidAsync(int tableNumber)
         {
             var ordersToUpdate = await _context.Order_cash
-                .Where(oc => oc.table_number == tableNumber && oc.Status == "Hazırlandı")
+                .Where(oc => oc.Table_number == tableNumber && oc.Status == "Hazırlandı")
                 .ToListAsync();
 
             if (ordersToUpdate == null || !ordersToUpdate.Any())
             {
-                return false; // Eğer siparişler yoksa veya hepsi "Hazırlandı" değilse
+                return Constants.TableEmpty; 
             }
 
             foreach (var order in ordersToUpdate)
@@ -48,8 +45,19 @@ namespace adisyon.Data
                 order.Status = "Ödendi";
             }
 
+            var ordersInOrderTable = await _context.Orders
+                .Where(o => ordersToUpdate.Select(oc => oc.Order_id).Contains(o.Order_id))
+                .ToListAsync();
+
+            foreach (var order in ordersInOrderTable)
+            {
+                order.Status = "Ödendi";
+            }
+
             await _context.SaveChangesAsync();
-            return true;
+
+            return Constants.OrdersMarkedAsPaid; 
         }
+
     }
 }

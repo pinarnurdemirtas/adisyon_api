@@ -1,59 +1,46 @@
 using Microsoft.AspNetCore.Mvc;
 using adisyon.Data;
-using Microsoft.AspNetCore.Authorization;
 
-namespace adisyon.Controller
+
+namespace adisyon.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "mutfak")]
+    [ApiController]
     public class KitchenController : ControllerBase
     {
-        private readonly KitchenDAO _kitchenDao;
+        private readonly KitchenDAO _kitchenDAO;
 
-        public KitchenController(KitchenDAO kitchenDao)
+        public KitchenController(KitchenDAO kitchenDAO)
         {
-            _kitchenDao = kitchenDao;
+            _kitchenDAO = kitchenDAO;
         }
 
-        // Hazırlanan siparişleri listeleme
-        [HttpGet("list")]
-        public async Task<IActionResult> GetOrders()
+        // "Hazırlanıyor" durumundaki siparişleri getirme
+        [HttpGet("orders")]
+        public async Task<IActionResult> GetOrdersAsync()
         {
-            try
+            var orders = await _kitchenDAO.GetOrdersAsync();
+
+            if (orders.ToString() == Constants.NoActiveOrders)
             {
-                var orders = await _kitchenDao.GetOrdersAsync();
-                return Ok(orders);
+                return NotFound(orders);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
-            }
+
+            return Ok(orders);
         }
 
-        // Sipariş durumunu 'Hazırlandı' olarak güncelleme
+        // Siparişin durumunu "Hazırlandı" olarak güncelleme
         [HttpPut("update-status/{id}")]
-        public async Task<IActionResult> UpdateOrderStatus(int id)
+        public async Task<IActionResult> UpdateOrderStatusAsync(int id)
         {
-            try
-            {
-                var updatedOrder = await _kitchenDao.UpdateOrderStatusAsync(id);
+            var result = await _kitchenDAO.UpdateOrderStatusAsync(id);
 
-                if (updatedOrder == null)
-                {
-                    return NotFound($"Order with ID {id} not found.");
-                }
-
-                return Ok(new
-                {
-                    Message = $"Order with ID {id} has been updated to 'Hazırlandı'.",
-                    Order = updatedOrder
-                });
-            }
-            catch (Exception ex)
+            if (result == Constants.NoActiveOrders)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound(result);
             }
+
+            return Ok(result);
         }
     }
 }

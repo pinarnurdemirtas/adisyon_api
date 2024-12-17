@@ -15,7 +15,6 @@ public class MenuController : ControllerBase
         _menuDao = menuDao;
     }
 
-    // GET: api/products
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Products>>> GetUrun()
     {
@@ -23,7 +22,6 @@ public class MenuController : ControllerBase
         return Ok(products);
     }
 
-    // GET: api/products/{id}
     [HttpGet("{id}")]
     public async Task<ActionResult<Products>> GetUrun(int id)
     {
@@ -32,7 +30,6 @@ public class MenuController : ControllerBase
         return Ok(product);
     }
 
-    // POST: api/products
     [HttpPost]
     public async Task<ActionResult<Products>> PostUrun(Products product)
     {
@@ -40,7 +37,6 @@ public class MenuController : ControllerBase
         return CreatedAtAction(nameof(GetUrun), new { id = product.Id }, product);
     }
 
-    // PUT: api/products/{id}
     [HttpPut("{id}")]
     public async Task<IActionResult> PutUrun(int id, Products product)
     {
@@ -58,7 +54,6 @@ public class MenuController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/products/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUrun(int id)
     {

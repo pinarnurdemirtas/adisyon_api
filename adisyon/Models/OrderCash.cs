@@ -11,7 +11,7 @@ public class OrderCash
     public string Status { get; set; }
     public DateTime Order_date { get; set; }
     
-    public int table_number { get; set; }
+    public int Table_number { get; set; }
 
 }
 

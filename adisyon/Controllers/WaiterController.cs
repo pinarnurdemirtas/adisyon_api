@@ -1,40 +1,52 @@
-using Microsoft.AspNetCore.Mvc;
 using adisyon.Data;
 using adisyon.Models;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace adisyon.Controller
+
+namespace adisyon.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "garson")]
+    [ApiController]
     public class WaiterController : ControllerBase
     {
-        private readonly WaiterDAO _waiterDao;
+        private readonly WaiterDAO _waiterDAO;
 
-        public WaiterController(WaiterDAO waiterDao)
+        public WaiterController(WaiterDAO waiterDAO)
         {
-            _waiterDao = waiterDao;
+            _waiterDAO = waiterDAO;
         }
 
-        // Yeni sipariş oluşturma
+        //Sipariş oluşturma
         [HttpPost("create-order")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrder order)
         {
-            if (!ModelState.IsValid)
+            if (order == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Order data is required.");
             }
 
-            var createdOrder = await _waiterDao.CreateOrderAsync(order);
+            var result = await _waiterDAO.CreateOrderAsync(order);
 
-            if (createdOrder == null)
+            if (result == null)
             {
-                return NotFound("Ürün bulunamadı");
+                return NotFound("Product not found.");
             }
 
-            return Ok(createdOrder);
+            return Ok(result); 
         }
 
+        // Masaya ait siparişleri görüntüleme
+        [HttpGet("orders/{tableNumber}")]
+        public async Task<IActionResult> GetOrdersByTableNumber(int tableNumber)
+        {
+            var orders = await _waiterDAO.GetOrdersByTableNumberAsync(tableNumber);
+
+            if (orders == null || orders.Count == 0)
+            {
+                return NotFound("No orders found for the given table number.");
+            }
+
+            return Ok(orders); 
+        }
     }
 }

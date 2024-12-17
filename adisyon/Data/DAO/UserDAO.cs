@@ -12,7 +12,6 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // Statik olmayan metod
         public async Task<Users> GetUserByUsernameAsync(string username)
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Username == username);

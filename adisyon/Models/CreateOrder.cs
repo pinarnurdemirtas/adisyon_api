@@ -1,6 +1,5 @@
 namespace adisyon.Models;
 
-// Kullanıcıdan sipariş oluşturmak için gereken veri modeli
 public class CreateOrder
 {
     public int Table_number { get; set; }

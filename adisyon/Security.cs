@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using adisyon.Models;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
 
 namespace adisyon;
 
@@ -12,7 +11,6 @@ public class Security
     private readonly IConfiguration _configuration;
 
 
-    // Constructor to inject IConfiguration
     public Security(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -29,10 +27,10 @@ public class Security
         {
             Subject = new ClaimsIdentity(new[] 
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),  // ID'yı 'sub' olarak ekliyoruz
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),  
                 new Claim(JwtRegisteredClaimNames.Email, user.Mail),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, user.Role) // Rolü claim olarak ekliyoruz
+                new Claim(ClaimTypes.Role, user.Role) 
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             Issuer = issuer,

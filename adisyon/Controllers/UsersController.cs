@@ -12,14 +12,12 @@ namespace adisyon.Controllers
         private readonly UserDAO _userDao;
         private readonly Security _security;
 
-        // Constructor'da UserRepository ve SecurityService bağımlılıklarını alıyoruz
         public UsersController(UserDAO userDao, Security security)
         {
             _userDao = userDao;
             _security = security;
         }
 
-        // Login metodu
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Login loginUser)
         {
@@ -49,7 +47,7 @@ namespace adisyon.Controllers
             });
         }
 
-        // Register (Kayıt Olma) metodu
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Users registerUser)
         {
@@ -58,17 +56,14 @@ namespace adisyon.Controllers
                 return BadRequest(new { message = "Invalid request. User data is missing." });
             }
 
-            // Kullanıcı adı zaten alınmış mı kontrol edelim
             var existingUser = await _userDao.GetUserByUsernameAsync(registerUser.Username);
             if (existingUser != null)
             {
                 return BadRequest(new { message = "Username is already taken." });
             }
 
-            // Şifreyi hash'liyoruz
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerUser.Password);
 
-            // Yeni kullanıcıyı ekliyoruz
             var newUser = new Users
             {
                 Id = registerUser.Id,
@@ -87,12 +82,10 @@ namespace adisyon.Controllers
             return Ok(new { message = "User registered successfully." });
         }
 
-        // Delete (Hesap Silme) metodu
         [HttpDelete("delete/{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            // Kullanıcıyı id ile veritabanından alıyoruz
             var user = await _userDao.GetUserByIdAsync(id);
 
             if (user == null)
@@ -100,7 +93,6 @@ namespace adisyon.Controllers
                 return NotFound(new { message = "User not found." });
             }
 
-            // Kullanıcıyı siliyoruz
             await _userDao.DeleteUserAsync(user);
             await _userDao.SaveChangesAsync();
 
