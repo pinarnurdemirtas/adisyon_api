@@ -12,26 +12,26 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // Belirtilen masa numarasına ait "Hazırlandı" durumundaki siparişleri alan metod
-        public async Task<object> GetOrdersByTableAsync(int tableNumber)
+        public async Task<object> GetAllReadyOrdersAsync()
         {
-            var orders = await _context.Order_cash
-                .Where(oc => oc.Table_number == tableNumber && oc.Status == "Hazırlandı")
+            var orders = await _context.Ordercash
+                .Where(oc => oc.Status == "Hazırlandı")
                 .ToListAsync();
 
             if (orders == null || !orders.Any())
             {
-                return Constants.TableEmpty;
+                return Constants.NoReadyOrders; // Eğer hazırda sipariş yoksa dönecek mesaj
             }
 
-            return orders; 
+            return orders; // "Hazırlandı" durumundaki tüm siparişleri döndür
         }
         
 
         // Siparişlerin durumunu "Ödendi" olarak güncelleyen metod
         public async Task<string> MarkOrdersAsPaidAsync(int tableNumber)
         {
-            var ordersToUpdate = await _context.Order_cash
+            // "Hazırlandı" durumundaki siparişleri bul
+            var ordersToUpdate = await _context.Ordercash
                 .Where(oc => oc.Table_number == tableNumber && oc.Status == "Hazırlandı")
                 .ToListAsync();
 
@@ -40,11 +40,13 @@ namespace adisyon.Data
                 return Constants.TableEmpty; 
             }
 
+            // Siparişlerin durumunu "Ödendi" olarak güncelle
             foreach (var order in ordersToUpdate)
             {
                 order.Status = "Ödendi";
             }
 
+            // İlgili siparişleri Orders tablosunda da güncelle
             var ordersInOrderTable = await _context.Orders
                 .Where(o => ordersToUpdate.Select(oc => oc.Order_id).Contains(o.Order_id))
                 .ToListAsync();
@@ -54,10 +56,21 @@ namespace adisyon.Data
                 order.Status = "Ödendi";
             }
 
+            // Masanın Table_status'unu boş yap
+            var table = await _context.Tables.FirstOrDefaultAsync(t => t.Table_number == tableNumber);
+    
+            if (table != null)
+            {
+                table.Table_status = "Boş"; // Masa durumu boş olarak güncelleniyor
+                _context.Tables.Update(table);
+            }
+
+            // Değişiklikleri kaydet
             await _context.SaveChangesAsync();
 
             return Constants.OrdersMarkedAsPaid; 
         }
+
 
     }
 }

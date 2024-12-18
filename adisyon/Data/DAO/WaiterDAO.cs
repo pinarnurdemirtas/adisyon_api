@@ -12,16 +12,35 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // Yeni sipariş oluşturma methodu
-        public async Task<string> CreateOrderAsync(CreateOrder order)
+        // Menüyü listeleyen metod
+        public async Task<List<Products>> GetAllProducts()
         {
+            var products = await _context.Products.ToListAsync();
+
+            return products; 
+        }
+        
+        
+        // Yeni sipariş oluşturma methodu
+        public async Task<string> CreateOrder(CreateOrder order)
+        {
+            // İlgili ürünü bul
             var product = await _context.Products.FindAsync(order.Product_id);
 
             if (product == null)
             {
-                return null; 
+                return Constants.ProductsNotFound; 
             }
 
+            // İlgili masayı bul
+            var table = await _context.Tables.FindAsync(order.Table_number);
+
+            if (table == null)
+            {
+                return Constants.TableNotFound; 
+            }
+
+            // Yeni siparişi oluştur
             var newOrder = new Orders
             {
                 Table_number = order.Table_number,
@@ -29,24 +48,31 @@ namespace adisyon.Data
                 Product_name = product.Name,
                 Quantity = order.Quantity,
                 Status = "Hazırlanıyor",
-                Order_date = DateTime.Now
+                Order_date = DateTime.Now,
+                User_id = order.User_id,
             };
 
+            // Siparişi ekle ve kaydet
             await _context.Orders.AddAsync(newOrder);
+            await _context.SaveChangesAsync();
+
+            // Masanın durumunu "Dolu" olarak güncelle
+            table.Table_status = "Dolu";
+            _context.Tables.Update(table);
             await _context.SaveChangesAsync();
 
             return Constants.OrderSentToKitchen;
         }
 
 
-        // Masa numarasına göre siparişleri getiren method
-        public async Task<List<Orders>> GetOrdersByTableNumberAsync(int tableNumber)
+        // Siparişleri getiren method
+        public async Task<List<Orders>> GetAllOrders()
         {
-            var orders = await _context.Orders
-                .Where(o => o.Table_number == tableNumber)
-                .ToListAsync();
+            var orders = await _context.Orders.ToListAsync();
 
             return orders; 
         }
+
+        
     }
 }

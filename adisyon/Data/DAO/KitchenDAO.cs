@@ -26,7 +26,8 @@ namespace adisyon.Data
                     Quantity = order.Quantity,
                     Table_number = order.Table_number,
                     Status = order.Status,
-                    Order_date = order.Order_date
+                    Order_date = order.Order_date,
+                    User_id = order.User_id,
                 })
                 .ToListAsync();
 
@@ -69,12 +70,12 @@ namespace adisyon.Data
                 Total_price = order.Quantity * productPrice, 
                 Order_date = order.Order_date,
                 Table_number = order.Table_number,
-                Status = order.Status
+                Status = order.Status,
             };
 
-            await _context.Order_cash.AddAsync(orderCash);
+            await _context.Ordercash.AddAsync(orderCash);
             await _context.SaveChangesAsync();
-
+            
             return Constants.OrderStatusUpdated;
         }
 

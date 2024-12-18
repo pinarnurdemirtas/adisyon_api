@@ -17,19 +17,23 @@ namespace adisyon.Controllers
             _cashDAO = cashDAO;
         }
         
-        // Belirtilen masa numarasına ait "Hazırlandı" durumundaki siparişleri getirme
-        [HttpGet("orders/{tableNumber}")]
-        public async Task<IActionResult> GetOrdersByTableAsync(int tableNumber)
+        // "Hazırlandı" durumundaki tüm siparişleri getirme
+        [HttpGet("orders")]
+        public async Task<IActionResult> GetReadyOrders()
         {
-            var orders = await _cashDAO.GetOrdersByTableAsync(tableNumber);
+            var result = await _cashDAO.GetAllReadyOrdersAsync();
 
-            if (orders.ToString() == Constants.TableEmpty)
+            if (result is string message)
             {
-                return NotFound(orders); 
+                // Eğer "Hazırlandı" sipariş yoksa, mesaj döndür
+                return NotFound(message); // 404 - Bulunamadı
             }
 
-            return Ok(orders); 
+            // "Hazırlandı" siparişler varsa, başarıyla listeyi döndür
+            return Ok(result); // 200 - Başarı
         }
+        
+      
         
         // Belirtilen masa numarasındaki siparişlerin durumunu "Ödendi" olarak güncelleme
         [HttpPut("mark-paid/{tableNumber}")]

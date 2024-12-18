@@ -2,14 +2,13 @@ using adisyon.Data;
 using adisyon.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using adisyon;  // Constants sınıfını kullanmak için ekleniyor
 
 namespace adisyon.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "garson")]
-
     public class WaiterController : ControllerBase
     {
         private readonly WaiterDAO _waiterDAO;
@@ -19,34 +18,51 @@ namespace adisyon.Controllers
             _waiterDAO = waiterDAO;
         }
 
-        //Sipariş oluşturma
-        [HttpPost("create-order")]
+        // Menüyü görüntüleme
+        [HttpGet("products")]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await _waiterDAO.GetAllProducts();
+
+            if (products == null || !products.Any())
+            {
+                return NotFound(Constants.ProductsNotFound);
+            }
+
+            return Ok(products); 
+        }
+        
+        // Sipariş oluşturma
+        [HttpPost("createOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrder order)
         {
             if (order == null)
             {
-                return BadRequest("Order data is required.");
+                return BadRequest(Constants.MissingOrder);  
             }
-
-            var result = await _waiterDAO.CreateOrderAsync(order);
-
-            if (result == null)
+            
+            var result = await _waiterDAO.CreateOrder(order);
+            if (result == Constants.ProductsNotFound)
             {
-                return NotFound("Product not found.");
+                return NotFound(Constants.ProductsNotFound);  
             }
-
-            return Ok(result); 
+            if (result == Constants.TableNotFound)
+            {
+                return NotFound(Constants.TableNotFound);
+            }
+            
+            return Ok(Constants.OrderSentToKitchen);
         }
 
-        // Masaya ait siparişleri görüntüleme
-        [HttpGet("orders/{tableNumber}")]
-        public async Task<IActionResult> GetOrdersByTableNumber(int tableNumber)
+        // Siparişleri görüntüleme
+        [HttpGet("orders")]
+        public async Task<IActionResult> GetAllOrders()
         {
-            var orders = await _waiterDAO.GetOrdersByTableNumberAsync(tableNumber);
+            var orders = await _waiterDAO.GetAllOrders();
 
-            if (orders == null || orders.Count == 0)
+            if (orders == null || !orders.Any())
             {
-                return NotFound("No orders found for the given table number.");
+                return NotFound(Constants.NoActiveOrders);  // Constants'dan mesaj alınır
             }
 
             return Ok(orders); 
