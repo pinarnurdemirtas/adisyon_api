@@ -1,5 +1,6 @@
 using adisyon.Data;
 using adisyon.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -7,6 +8,8 @@ namespace adisyon.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "garson")]
+
     public class WaiterController : ControllerBase
     {
         private readonly WaiterDAO _waiterDAO;

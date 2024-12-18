@@ -6,6 +6,7 @@ namespace adisyon.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+
 public class MenuController : ControllerBase
 {
     private readonly MenuDAO _menuDao;

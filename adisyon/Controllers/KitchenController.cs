@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using adisyon.Data;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace adisyon.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "mutfak")]
+
     public class KitchenController : ControllerBase
     {
         private readonly KitchenDAO _kitchenDAO;
