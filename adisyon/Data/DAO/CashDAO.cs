@@ -12,7 +12,7 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // Dolu masalardaki siparişleri getirme
+        // Dolu masalardaki siparişleri getir
         public async Task<List<OrderCash>> GetOrdersFromFullTables()
         {
             return await _context.Ordercash
@@ -27,7 +27,7 @@ namespace adisyon.Data
                 .ToListAsync();
         }
 
-        // Belirli bir masa numarasına ait siparişleri getirme
+        // Belirli bir masa numarasına ait siparişleri getir
         public async Task<List<OrderCash>> GetOrdersByTableNumber(int tableNumber)
         {
             return await _context.Ordercash
@@ -35,13 +35,13 @@ namespace adisyon.Data
                 .ToListAsync();
         }
 
-        // Siparişlerin durumlarını güncelleme
+        // Siparişlerin durumlarını güncelle
         public async Task UpdateOrders(IEnumerable<OrderCash> orders)
         {
             _context.Ordercash.UpdateRange(orders);
         }
 
-        // Belirli bir masayı güncelleme
+        // Belirli bir masayı güncelle
         public async Task UpdateTableStatus(int tableNumber, string status)
         {
             var table = await _context.Tables.FirstOrDefaultAsync(t => t.Table_number == tableNumber);
@@ -51,8 +51,16 @@ namespace adisyon.Data
                 _context.Tables.Update(table);
             }
         }
+        
+        // Ödenmiş siparişleri tarihe göre getir
+        public async Task<List<OrderCash>> GetPaidOrdersByDate(DateTime date)
+        {
+            return await _context.Ordercash
+                .Where(o => o.Status == "Ödendi" && o.Order_date.Date == date.Date)
+                .ToListAsync();
+        }
 
-        // Değişiklikleri kaydetme
+        // Değişiklikleri kaydet
         public async Task SaveChanges()
         {
             await _context.SaveChangesAsync();

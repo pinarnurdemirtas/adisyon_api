@@ -12,26 +12,31 @@ namespace adisyon.Data
             _context = context;
         }
 
+        // Kullanıcı adı ile bir kullanıcıyı veritabanından getir
         public async Task<Users> GetUserByUsername(string username)
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
         }
 
+        // Verilen id ile bir kullanıcıyı getir
         public async Task<Users> GetUserById(int id)
         {
             return await _context.Users.FindAsync(id);
         }
 
+        // Yeni bir kullanıcıyı veritabanına ekle
         public async Task AddUser(Users user)
         {
             await _context.Users.AddAsync(user);
         }
 
+        // Verilen kullanıcıyı veritabanından sil
         public async Task DeleteUser(Users user)
         {
             _context.Users.Remove(user);
         }
 
+        // Veritabanındaki yapılan değişiklikleri kaydet
         public async Task SaveChanges()
         {
             await _context.SaveChangesAsync();

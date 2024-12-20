@@ -19,7 +19,6 @@ namespace adisyon.Controllers
         [HttpGet("ordersFromOccupiedTables")]
         public async Task<IActionResult> GetOrdersFromOccupiedTables()
         {
-            // Sadece "Dolu" masalardaki tüm siparişleri getir
             var orders = await _cashDAO.GetOrdersFromFullTables();
             if (orders == null || !orders.Any())
             {
@@ -32,14 +31,12 @@ namespace adisyon.Controllers
         [HttpPut("markOrdersAsPaidByTable/{tableNumber}")]
         public async Task<IActionResult> MarkOrdersAsPaidByTable(int tableNumber)
         {
-            // Masa numarasına göre siparişleri getir
             var orders = await _cashDAO.GetOrdersByTableNumber(tableNumber);
             if (orders == null || !orders.Any())
             {
                 return NotFound(Message.NoReadyOrders);
             }
 
-            // Siparişlerin durumunu "Ödendi" olarak güncelle
             foreach (var order in orders)
             {
                 order.Status = "Ödendi";
@@ -47,7 +44,6 @@ namespace adisyon.Controllers
 
             await _cashDAO.UpdateOrders(orders);
 
-            // Masanın durumunu "Boş" olarak güncelle
             await _cashDAO.UpdateTableStatus(tableNumber, "Boş");
 
             await _cashDAO.SaveChanges();
@@ -55,7 +51,17 @@ namespace adisyon.Controllers
             return Ok(Message.OrdersMarkedAsPaid);
         }
 
+        [HttpGet("paidOrdersByDate")]
+        public async Task<IActionResult> GetPaidOrdersByDate([FromQuery] DateTime date)
+        {
+            var orders = await _cashDAO.GetPaidOrdersByDate(date);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound(Message.OrderNotFound);
+            }
 
-        
+            return Ok(orders);
+        }
+
     }
 }

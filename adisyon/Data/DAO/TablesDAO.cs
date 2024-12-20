@@ -12,7 +12,7 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // Yeni masa eklemek için metod
+        // Yeni masa ekle
         public async Task<Tables> AddTableAsync(Tables table)
         {
             await _context.Tables.AddAsync(table);
@@ -20,19 +20,19 @@ namespace adisyon.Data
             return table;
         }
 
-        // Masa bulmak için metod
+        // Masayı bul
         public async Task<Tables> GetTableByNumberAsync(int tableNumber)
         {
             return await _context.Tables.FindAsync(tableNumber);
         }
 
-        // Tüm masaları getiren metod
+        // Tüm masaları getir
         public async Task<List<Tables>> GetAllTablesAsync()
         {
             return await _context.Tables.ToListAsync();
         }
 
-        // Masa silmek için metod
+        // Masa sil
         public async Task<bool> DeleteTableAsync(int tableNumber)
         {
             var table = await _context.Tables.FindAsync(tableNumber);

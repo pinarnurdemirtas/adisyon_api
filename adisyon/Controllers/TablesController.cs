@@ -20,7 +20,7 @@ namespace adisyon.Controllers
         {
             if (table == null)
             {
-                return BadRequest("Geçerli bir masa bilgisi gönderilmedi.");
+                return BadRequest(Message.TableNotFound);
             }
 
             var newTable = await _tablesDAO.AddTableAsync(table);
@@ -33,7 +33,7 @@ namespace adisyon.Controllers
             var result = await _tablesDAO.DeleteTableAsync(tableNumber);
             if (!result)
             {
-                return NotFound("Masa bulunamadı.");
+                return NotFound(Message.TableNotFound);
             }
 
             return NoContent(); 
@@ -52,7 +52,7 @@ namespace adisyon.Controllers
             var table = await _tablesDAO.GetTableByNumberAsync(tableNumber);
             if (table == null)
             {
-                return NotFound("Masa bulunamadı.");
+                return NotFound(Message.TableNotFound);
             }
 
             return Ok(table);

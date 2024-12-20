@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("adisyon")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7dae1412882e46cc1c0e3e76e8a25790f0116e77")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0abd464fd56527d293dee0cd467ffb22c2c25f59")]
 [assembly: System.Reflection.AssemblyProductAttribute("adisyon")]
 [assembly: System.Reflection.AssemblyTitleAttribute("adisyon")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

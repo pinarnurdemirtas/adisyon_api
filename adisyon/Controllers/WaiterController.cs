@@ -26,7 +26,7 @@ namespace adisyon.Controllers
             return int.TryParse(userIdString, out int userId) ? userId : 0;
         }
 
-        [HttpGet("products")]
+        [HttpGet("menu")]
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _waiterDAO.GetAllProductsAsync();

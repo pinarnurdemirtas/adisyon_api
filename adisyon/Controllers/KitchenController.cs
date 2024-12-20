@@ -40,11 +40,9 @@ namespace adisyon.Controllers
                 return NotFound(Message.ProductsNotFound);
             }
 
-            // Sipariş durumu güncelleniyor
             order.Status = "Hazırlandı";
             await _kitchenDAO.UpdateOrderAsync(order);
 
-            // Sipariş ödemesi oluşturuluyor
             var orderCash = new OrderCash
             {
                 Order_id = order.Order_id,
