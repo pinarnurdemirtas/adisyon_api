@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
 using adisyon.Data;
+using adisyon.Models;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace adisyon.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     [Authorize(Roles = "mutfak")]
 
     public class KitchenController : ControllerBase
@@ -18,32 +18,49 @@ namespace adisyon.Controllers
             _kitchenDAO = kitchenDAO;
         }
 
-        // "Hazırlanıyor" durumundaki siparişleri getirme
         [HttpGet("orders")]
-        public async Task<IActionResult> GetOrdersAsync()
+        public async Task<IActionResult> GetPreparingOrders()
         {
-            var orders = await _kitchenDAO.GetOrdersAsync();
-
-            if (orders.ToString() == Constants.NoActiveOrders)
-            {
-                return NotFound(orders);
-            }
-
+            var orders = await _kitchenDAO.GetOrdersByStatusAsync("Hazırlanıyor");
             return Ok(orders);
         }
 
-        // Siparişin durumunu "Hazırlandı" olarak güncelleme
-        [HttpPut("update-status/{id}")]
-        public async Task<IActionResult> UpdateOrderStatusAsync(int id)
+        [HttpPost("updateStatus")]
+        public async Task<IActionResult> UpdateOrderStatus([FromBody] int orderId)
         {
-            var result = await _kitchenDAO.UpdateOrderStatusAsync(id);
-
-            if (result == Constants.NoActiveOrders)
+            var order = await _kitchenDAO.GetOrderByIdAsync(orderId);
+            if (order == null)
             {
-                return NotFound(result);
+                return NotFound(Constants.OrderNotFound);
             }
 
-            return Ok(result);
+            var product = await _kitchenDAO.GetProductByIdAsync(order.Product_id);
+            if (product == null)
+            {
+                return NotFound(Constants.ProductsNotFound);
+            }
+
+            // Sipariş durumu güncelleniyor
+            order.Status = "Hazırlandı";
+            await _kitchenDAO.UpdateOrderAsync(order);
+
+            // Sipariş ödemesi oluşturuluyor
+            var orderCash = new OrderCash
+            {
+                Order_id = order.Order_id,
+                Product_id = order.Product_id,
+                Quantity = order.Quantity,
+                Product_price = product.Price,
+                Total_price = order.Quantity * product.Price,
+                Order_date = order.Order_date,
+                Table_number = order.Table_number,
+                Status = order.Status,
+            };
+
+            await _kitchenDAO.AddOrderCashAsync(orderCash);
+            await _kitchenDAO.SaveChangesAsync();
+
+            return Ok(orderCash);
         }
     }
 }

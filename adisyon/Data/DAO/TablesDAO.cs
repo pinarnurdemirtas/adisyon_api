@@ -13,41 +13,43 @@ namespace adisyon.Data
         }
 
         // Yeni masa eklemek için metod
-        public async Task<Tables> AddTable(Tables table)
+        public async Task<Tables> AddTableAsync(Tables table)
         {
-            // Yeni masayı ekle ve kaydet
             await _context.Tables.AddAsync(table);
             await _context.SaveChangesAsync();
-
             return table;
         }
 
-        // Masa silme işlemi
-        public async Task<bool> DeleteTable(int tableNumber)
+        // Masa bulmak için metod
+        public async Task<Tables> GetTableByNumberAsync(int tableNumber)
         {
-            var table = await _context.Tables.FindAsync(tableNumber);
-
-            if (table == null)
-            {
-                return false; // Masa bulunamadı
-            }
-
-            _context.Tables.Remove(table);
-            await _context.SaveChangesAsync();
-
-            return true; // Masa başarıyla silindi
+            return await _context.Tables.FindAsync(tableNumber);
         }
 
         // Tüm masaları getiren metod
-        public async Task<List<Tables>> GetAllTables()
+        public async Task<List<Tables>> GetAllTablesAsync()
         {
             return await _context.Tables.ToListAsync();
         }
 
-        // Belirli bir masayı getiren metod
-        public async Task<Tables> GetTableByNumber(int tableNumber)
+        // Masa silmek için metod
+        public async Task<bool> DeleteTableAsync(int tableNumber)
         {
-            return await _context.Tables.FindAsync(tableNumber);
+            var table = await _context.Tables.FindAsync(tableNumber);
+            if (table == null)
+            {
+                return false;
+            }
+
+            _context.Tables.Remove(table);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // Değişiklikleri kaydet
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

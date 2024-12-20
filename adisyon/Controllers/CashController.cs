@@ -1,13 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
 using adisyon.Data;
+using adisyon.Models;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace adisyon.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     [Authorize(Roles = "kasa")]
+
     public class CashController : ControllerBase
     {
         private readonly CashDAO _cashDAO;
@@ -16,38 +17,58 @@ namespace adisyon.Controllers
         {
             _cashDAO = cashDAO;
         }
-        
-        // "Hazırlandı" durumundaki tüm siparişleri getirme
-        [HttpGet("orders")]
-        public async Task<IActionResult> GetReadyOrders()
-        {
-            var result = await _cashDAO.GetAllReadyOrdersAsync();
 
-            if (result is string message)
+        [HttpPost("markAsPaid")]
+        public async Task<IActionResult> MarkOrdersAsPaid([FromBody] int tableNumber)
+        {
+            // "Hazırlandı" durumundaki siparişleri getir
+            var readyOrders = await _cashDAO.GetReadyOrdersByTableAsync(tableNumber);
+            if (readyOrders == null || !readyOrders.Any())
             {
-                // Eğer "Hazırlandı" sipariş yoksa, mesaj döndür
-                return NotFound(message); // 404 - Bulunamadı
+                return NotFound(Constants.NoReadyOrders);
             }
 
-            // "Hazırlandı" siparişler varsa, başarıyla listeyi döndür
-            return Ok(result); // 200 - Başarı
-        }
-        
-      
-        
-        // Belirtilen masa numarasındaki siparişlerin durumunu "Ödendi" olarak güncelleme
-        [HttpPut("mark-paid/{tableNumber}")]
-        public async Task<IActionResult> MarkOrdersAsPaidAsync(int tableNumber)
-        {
-            var result = await _cashDAO.MarkOrdersAsPaidAsync(tableNumber);
-
-            if (result == Constants.TableEmpty)
+            // Siparişleri güncelle
+            foreach (var order in readyOrders)
             {
-                return NotFound(result); // Masada güncellenebilir sipariş yoksa 404 döneriz
+                order.Status = "Ödendi";
+            }
+            await _cashDAO.UpdateOrdersAsync(readyOrders);
+
+            // Orders tablosundaki siparişleri güncelle
+            var orderIds = readyOrders.Select(o => o.Order_id).ToList();
+            var ordersInOrderTable = await _cashDAO.GetOrdersByIdsAsync(orderIds);
+
+            foreach (var order in ordersInOrderTable)
+            {
+                order.Status = "Ödendi";
+            }
+            await _cashDAO.UpdateOrdersInOrdersTableAsync(ordersInOrderTable);
+
+            // Masayı güncelle
+            var table = await _cashDAO.GetTableByNumberAsync(tableNumber);
+            if (table != null)
+            {
+                table.Table_status = "Boş";
+                await _cashDAO.UpdateTableAsync(table);
             }
 
-            return Ok(result); // Siparişler "Ödendi" olarak işaretlendiyse, 200 ile döneriz
+            // Değişiklikleri kaydet
+            await _cashDAO.SaveChangesAsync();
+
+            return Ok(Constants.OrdersMarkedAsPaid);
         }
 
+        [HttpGet("readyOrders/{tableNumber}")]
+        public async Task<IActionResult> GetReadyOrders(int tableNumber)
+        {
+            var orders = await _cashDAO.GetReadyOrdersByTableAsync(tableNumber);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound(Constants.OrderNotFound);
+            }
+            
+            return Ok(orders);
+        }
     }
 }

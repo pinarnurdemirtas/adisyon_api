@@ -23,23 +23,20 @@ namespace adisyon.Controllers
         {
             if (loginUser == null)
             {
-                return BadRequest(new { message = "Invalid request. User information is missing." });
+                return BadRequest(Constants.InvalidLogin);
             }
 
-            var user = await _userDao.GetUserByUsernameAsync(loginUser.Username);
-
+            var user = await _userDao.GetUserByUsername(loginUser.Username);
             if (user == null)
             {
-                return Unauthorized(new { message = "Invalid username or password." });
+                return Unauthorized(Constants.UserNotFound);
             }
-
             if (!BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password))
             {
-                return Unauthorized(new { message = "Invalid username or password." });
+                return Unauthorized(Constants.UserNotFound);
             }
 
             var token = _security.CreateToken(user);
-
             return Ok(new
             {
                 Token = token,
@@ -53,15 +50,13 @@ namespace adisyon.Controllers
         {
             if (registerUser == null)
             {
-                return BadRequest(new { message = "Invalid request. User data is missing." });
+                return BadRequest(Constants.InvalidRegister);
             }
-
-            var existingUser = await _userDao.GetUserByUsernameAsync(registerUser.Username);
+            var existingUser = await _userDao.GetUserByUsername(registerUser.Username);
             if (existingUser != null)
             {
-                return BadRequest(new { message = "Username is already taken." });
+                return BadRequest(Constants.UsernameUsed);
             }
-
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerUser.Password);
 
             var newUser = new Users
@@ -76,27 +71,26 @@ namespace adisyon.Controllers
                 Role = registerUser.Role,
             };
 
-            await _userDao.AddUserAsync(newUser);
-            await _userDao.SaveChangesAsync();
+            await _userDao.AddUser(newUser);
+            await _userDao.SaveChanges();
 
-            return Ok(new { message = "User registered successfully." });
+            return Ok(Constants.UserCreated);
         }
 
         [HttpDelete("delete/{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _userDao.GetUserByIdAsync(id);
-
+            var user = await _userDao.GetUserById(id);
             if (user == null)
             {
-                return NotFound(new { message = "User not found." });
+                return NotFound(Constants.UserNotFound);
             }
 
-            await _userDao.DeleteUserAsync(user);
-            await _userDao.SaveChangesAsync();
+            await _userDao.DeleteUser(user);
+            await _userDao.SaveChanges();
 
-            return Ok(new { message = "User deleted successfully." });
+            return Ok(Constants.UserDeleted);
         }
     }
 }

@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace adisyon.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class TablesController : ControllerBase
     {
         private readonly TablesDAO _tablesDAO;
@@ -15,48 +15,41 @@ namespace adisyon.Controllers
             _tablesDAO = tablesDAO;
         }
 
-        // Yeni masa eklemek için POST metodunu kullanıyoruz
-        [HttpPost("add-table")]
+        [HttpPost("add")]
         public async Task<IActionResult> AddTable([FromBody] Tables table)
         {
-            if (table == null || string.IsNullOrEmpty(table.Table_status))
+            if (table == null)
             {
-                return BadRequest("Geçersiz masa verisi.");
+                return BadRequest("Geçerli bir masa bilgisi gönderilmedi.");
             }
 
-            var newTable = await _tablesDAO.AddTable(table);
-
+            var newTable = await _tablesDAO.AddTableAsync(table);
             return CreatedAtAction(nameof(GetTableByNumber), new { tableNumber = newTable.Table_number }, newTable);
         }
 
-        // Masa silmek için DELETE metodunu kullanıyoruz
-        [HttpDelete("delete-table/{tableNumber}")]
+        [HttpDelete("delete/{tableNumber}")]
         public async Task<IActionResult> DeleteTable(int tableNumber)
         {
-            var success = await _tablesDAO.DeleteTable(tableNumber);
-
-            if (!success)
+            var result = await _tablesDAO.DeleteTableAsync(tableNumber);
+            if (!result)
             {
                 return NotFound("Masa bulunamadı.");
             }
 
-            return NoContent(); // Başarıyla silindi
+            return NoContent(); 
         }
 
-        // Tüm masaları listeleyen metod
-        [HttpGet("all-tables")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllTables()
         {
-            var tables = await _tablesDAO.GetAllTables();
+            var tables = await _tablesDAO.GetAllTablesAsync();
             return Ok(tables);
         }
 
-        // Belirli bir masayı getiren metod
-        [HttpGet("table/{tableNumber}")]
+        [HttpGet("{tableNumber}")]
         public async Task<IActionResult> GetTableByNumber(int tableNumber)
         {
-            var table = await _tablesDAO.GetTableByNumber(tableNumber);
-
+            var table = await _tablesDAO.GetTableByNumberAsync(tableNumber);
             if (table == null)
             {
                 return NotFound("Masa bulunamadı.");

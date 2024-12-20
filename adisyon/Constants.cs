@@ -2,18 +2,18 @@ namespace adisyon
 {
     public static class Constants
     {
-        public const string TableEmpty = "Bu masanın aktif siparişi bulunmamaktadır.";
-        public const string OrdersMarkedAsPaid = "Sipariş ödendi olarak işaretlendi.";
-        public const string OrderStatusUpdated = "Sipariş hazırlandı olarak işaretlendi.";
-        public const string NoActiveOrders = "Aktif sipariş bulunmamaktadır.";
-        public const string OrderSentToKitchen = "Sipariş mutfağa iletildi";
-        public const string NoReadyOrders = "Ödenmemiş sipariş bulunmamaktadır.";
+      
+        public const string InvalidLogin = "Giriş Başarısız.";
+        public const string UserNotFound = "Kullanıcı bulunamadı.";
+        public const string InvalidRegister = "Kayıt başarısız.";
+        public const string UsernameUsed = "Bu kullanıcı adı geçersiz.";
+        public const string UserCreated = "Kayıt başarılı.";
+        public const string UserDeleted = "Kullanıcı silindi.";
         public const string TableNotFound = "Masa bulunamadı.";
         public const string ProductsNotFound = "Ürün bulunamadı.";
-        public const string MissingOrder = "Sipariş verisi eksik.";
-
-
-
-
+        public const string UserIdNotFound = "Kullanıcı bulunmuyor.";
+        public const string OrdersMarkedAsPaid = "Siparişler ödendi olarak işaretlendi ve masa boş olarak güncellendi.";
+        public const string NoReadyOrders = "Ödenmemiş sipariş bulunmamaktad";
+        public const string OrderNotFound = "Sipariş bulunmamaktadır.";
     }
 }

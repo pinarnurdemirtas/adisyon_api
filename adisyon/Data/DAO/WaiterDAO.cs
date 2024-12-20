@@ -12,59 +12,43 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // Menüyü listeleyen metod
-        public async Task<List<Products>> GetAllProducts()
+        public async Task<List<Products>> GetAllProductsAsync()
         {
-            var products = await _context.Products.ToListAsync();
-            return products; 
+            return await _context.Products.ToListAsync();
         }
-        
-        // Yeni sipariş oluşturma methodu
-        public async Task<Orders> CreateOrder(CreateOrder order)
+
+        public async Task<Products> GetProductByIdAsync(int productId)
         {
-            // İlgili ürünü bul
-            var product = await _context.Products.FindAsync(order.Product_id);
-            if (product == null)
-            {
-                return null;  
-            }
+            return await _context.Products.FindAsync(productId);
+        }
 
-            // İlgili masayı bul
-            var table = await _context.Tables.FindAsync(order.Table_number);
-            if (table == null)
-            {
-                return null;  
-            }
+        public async Task<Tables> GetTableByNumberAsync(int tableNumber)
+        {
+            return await _context.Tables.FindAsync(tableNumber);
+        }
 
-            // Yeni siparişi oluştur
-            var newOrder = new Orders
-            {
-                Table_number = order.Table_number,
-                Product_id = order.Product_id,
-                Product_name = product.Name,
-                Quantity = order.Quantity,
-                Status = "Hazırlanıyor",
-                Order_date = DateTime.Now,
-                User_id = order.User_id,
-            };
+        public async Task AddOrderAsync(Orders order)
+        {
+            await _context.Orders.AddAsync(order);
+        }
 
-            // Siparişi ekle ve kaydet
-            await _context.Orders.AddAsync(newOrder);
-            await _context.SaveChangesAsync();
+        public async Task<List<Orders>> GetOrdersByUserIdAsync(int userId)
+        {
+            return await _context.Orders
+                .Where(order => order.User_id == userId)
+                .ToListAsync();
+        }
 
-            // Masanın durumunu "Dolu" olarak güncelle
-            table.Table_status = "Dolu";
+
+        public async Task UpdateTableAsync(Tables table)
+        {
             _context.Tables.Update(table);
             await _context.SaveChangesAsync();
-
-            return newOrder; // Sipariş başarıyla oluşturuldu
         }
 
-        // Siparişleri getiren method
-        public async Task<List<Orders>> GetAllOrders()
+        public async Task SaveChangesAsync()
         {
-            var orders = await _context.Orders.ToListAsync();
-            return orders; 
+            await _context.SaveChangesAsync();
         }
     }
 }

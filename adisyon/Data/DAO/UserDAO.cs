@@ -12,32 +12,27 @@ namespace adisyon.Data
             _context = context;
         }
 
-        public async Task<Users> GetUserByUsernameAsync(string username)
+        public async Task<Users> GetUserByUsername(string username)
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
         }
 
-        public async Task<Users> GetUserByIdAsync(int id)
+        public async Task<Users> GetUserById(int id)
         {
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<bool> UserExistsAsync(string username)
-        {
-            return await _context.Users.AnyAsync(u => u.Username == username);
-        }
-
-        public async Task AddUserAsync(Users user)
+        public async Task AddUser(Users user)
         {
             await _context.Users.AddAsync(user);
         }
 
-        public async Task DeleteUserAsync(Users user)
+        public async Task DeleteUser(Users user)
         {
             _context.Users.Remove(user);
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChanges()
         {
             await _context.SaveChangesAsync();
         }
