@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using adisyon.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace adisyon.Data
 {
@@ -12,47 +12,48 @@ namespace adisyon.Data
             _context = context;
         }
 
-        // "Hazırlandı" durumundaki siparişleri getirme
-        public async Task<List<OrderCash>> GetReadyOrdersByTableAsync(int tableNumber)
+        // Dolu masalardaki siparişleri getirme
+        public async Task<List<OrderCash>> GetOrdersFromFullTables()
         {
             return await _context.Ordercash
-                .Where(oc => oc.Table_number == tableNumber && oc.Status == "Hazırlandı")
+                .Join(
+                    _context.Tables,
+                    oc => oc.Table_number,
+                    t => t.Table_number,
+                    (oc, t) => new { OrderCash = oc, Table = t }
+                )
+                .Where(joined => joined.Table.Table_status == "Dolu" && joined.OrderCash.Status == "Hazırlandı")
+                .Select(joined => joined.OrderCash)
                 .ToListAsync();
         }
 
-        // Belirli bir masanın durumunu getirme
-        public async Task<Tables> GetTableByNumberAsync(int tableNumber)
+        // Belirli bir masa numarasına ait siparişleri getirme
+        public async Task<List<OrderCash>> GetOrdersByTableNumber(int tableNumber)
         {
-            return await _context.Tables.FirstOrDefaultAsync(t => t.Table_number == tableNumber);
+            return await _context.Ordercash
+                .Where(oc => oc.Table_number == tableNumber)
+                .ToListAsync();
         }
 
-        // Sipariş durumlarını güncelleme
-        public async Task UpdateOrdersAsync(IEnumerable<OrderCash> orders)
+        // Siparişlerin durumlarını güncelleme
+        public async Task UpdateOrders(IEnumerable<OrderCash> orders)
         {
             _context.Ordercash.UpdateRange(orders);
         }
 
-        // Masayı güncelleme
-        public async Task UpdateTableAsync(Tables table)
+        // Belirli bir masayı güncelleme
+        public async Task UpdateTableStatus(int tableNumber, string status)
         {
-            _context.Tables.Update(table);
+            var table = await _context.Tables.FirstOrDefaultAsync(t => t.Table_number == tableNumber);
+            if (table != null)
+            {
+                table.Table_status = status;
+                _context.Tables.Update(table);
+            }
         }
 
-        // Siparişler tablosunda ilgili kayıtları getirme
-        public async Task<List<Orders>> GetOrdersByIdsAsync(IEnumerable<int> orderIds)
-        {
-            return await _context.Orders
-                .Where(o => orderIds.Contains(o.Order_id))
-                .ToListAsync();
-        }
-
-        // Orders tablosundaki siparişleri güncelleme
-        public async Task UpdateOrdersInOrdersTableAsync(IEnumerable<Orders> orders)
-        {
-            _context.Orders.UpdateRange(orders);
-        }
-
-        public async Task SaveChangesAsync()
+        // Değişiklikleri kaydetme
+        public async Task SaveChanges()
         {
             await _context.SaveChangesAsync();
         }

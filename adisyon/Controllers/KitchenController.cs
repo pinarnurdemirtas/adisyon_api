@@ -31,13 +31,13 @@ namespace adisyon.Controllers
             var order = await _kitchenDAO.GetOrderByIdAsync(orderId);
             if (order == null)
             {
-                return NotFound(Constants.OrderNotFound);
+                return NotFound(Message.OrderNotFound);
             }
 
             var product = await _kitchenDAO.GetProductByIdAsync(order.Product_id);
             if (product == null)
             {
-                return NotFound(Constants.ProductsNotFound);
+                return NotFound(Message.ProductsNotFound);
             }
 
             // Sipariş durumu güncelleniyor

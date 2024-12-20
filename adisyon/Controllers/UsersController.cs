@@ -23,17 +23,17 @@ namespace adisyon.Controllers
         {
             if (loginUser == null)
             {
-                return BadRequest(Constants.InvalidLogin);
+                return BadRequest(Message.InvalidLogin);
             }
 
             var user = await _userDao.GetUserByUsername(loginUser.Username);
             if (user == null)
             {
-                return Unauthorized(Constants.UserNotFound);
+                return Unauthorized(Message.UserNotFound);
             }
             if (!BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password))
             {
-                return Unauthorized(Constants.UserNotFound);
+                return Unauthorized(Message.UserNotFound);
             }
 
             var token = _security.CreateToken(user);
@@ -50,12 +50,12 @@ namespace adisyon.Controllers
         {
             if (registerUser == null)
             {
-                return BadRequest(Constants.InvalidRegister);
+                return BadRequest(Message.InvalidRegister);
             }
             var existingUser = await _userDao.GetUserByUsername(registerUser.Username);
             if (existingUser != null)
             {
-                return BadRequest(Constants.UsernameUsed);
+                return BadRequest(Message.UsernameUsed);
             }
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerUser.Password);
 
@@ -74,7 +74,7 @@ namespace adisyon.Controllers
             await _userDao.AddUser(newUser);
             await _userDao.SaveChanges();
 
-            return Ok(Constants.UserCreated);
+            return Ok(Message.UserCreated);
         }
 
         [HttpDelete("delete/{id}")]
@@ -84,13 +84,13 @@ namespace adisyon.Controllers
             var user = await _userDao.GetUserById(id);
             if (user == null)
             {
-                return NotFound(Constants.UserNotFound);
+                return NotFound(Message.UserNotFound);
             }
 
             await _userDao.DeleteUser(user);
             await _userDao.SaveChanges();
 
-            return Ok(Constants.UserDeleted);
+            return Ok(Message.UserDeleted);
         }
     }
 }

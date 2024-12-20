@@ -39,20 +39,20 @@ namespace adisyon.Controllers
             var userId = GetCurrentUserId();
             if (userId == 0)
             {
-                return Unauthorized(Constants.UserIdNotFound);
+                return Unauthorized(Message.UserIdNotFound);
             }
 
             var product = await _waiterDAO.GetProductByIdAsync(order.Product_id);
             if (product == null)
             {
-                return BadRequest(Constants.ProductsNotFound);
+                return BadRequest(Message.ProductsNotFound);
             }
             
 
             var table = await _waiterDAO.GetTableByNumberAsync(order.Table_number);
             if (table == null)
             {
-                return BadRequest(Constants.TableNotFound);
+                return BadRequest(Message.TableNotFound);
             }
 
             var newOrder = new Orders
@@ -79,7 +79,7 @@ namespace adisyon.Controllers
             var userId = GetCurrentUserId();
             if (userId == 0)
             {
-                return Unauthorized(Constants.UserIdNotFound);
+                return Unauthorized(Message.UserIdNotFound);
             }
 
             var userOrders = await _waiterDAO.GetOrdersByUserIdAsync(userId);

@@ -1,5 +1,4 @@
 using adisyon.Data;
-using adisyon.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,63 +11,51 @@ namespace adisyon.Controllers
     public class CashController : ControllerBase
     {
         private readonly CashDAO _cashDAO;
-
         public CashController(CashDAO cashDAO)
         {
             _cashDAO = cashDAO;
         }
 
-        [HttpPost("markAsPaid")]
-        public async Task<IActionResult> MarkOrdersAsPaid([FromBody] int tableNumber)
+        [HttpGet("ordersFromOccupiedTables")]
+        public async Task<IActionResult> GetOrdersFromOccupiedTables()
         {
-            // "Hazırlandı" durumundaki siparişleri getir
-            var readyOrders = await _cashDAO.GetReadyOrdersByTableAsync(tableNumber);
-            if (readyOrders == null || !readyOrders.Any())
-            {
-                return NotFound(Constants.NoReadyOrders);
-            }
-
-            // Siparişleri güncelle
-            foreach (var order in readyOrders)
-            {
-                order.Status = "Ödendi";
-            }
-            await _cashDAO.UpdateOrdersAsync(readyOrders);
-
-            // Orders tablosundaki siparişleri güncelle
-            var orderIds = readyOrders.Select(o => o.Order_id).ToList();
-            var ordersInOrderTable = await _cashDAO.GetOrdersByIdsAsync(orderIds);
-
-            foreach (var order in ordersInOrderTable)
-            {
-                order.Status = "Ödendi";
-            }
-            await _cashDAO.UpdateOrdersInOrdersTableAsync(ordersInOrderTable);
-
-            // Masayı güncelle
-            var table = await _cashDAO.GetTableByNumberAsync(tableNumber);
-            if (table != null)
-            {
-                table.Table_status = "Boş";
-                await _cashDAO.UpdateTableAsync(table);
-            }
-
-            // Değişiklikleri kaydet
-            await _cashDAO.SaveChangesAsync();
-
-            return Ok(Constants.OrdersMarkedAsPaid);
-        }
-
-        [HttpGet("readyOrders/{tableNumber}")]
-        public async Task<IActionResult> GetReadyOrders(int tableNumber)
-        {
-            var orders = await _cashDAO.GetReadyOrdersByTableAsync(tableNumber);
+            // Sadece "Dolu" masalardaki tüm siparişleri getir
+            var orders = await _cashDAO.GetOrdersFromFullTables();
             if (orders == null || !orders.Any())
             {
-                return NotFound(Constants.OrderNotFound);
+                return NotFound(Message.FullTableNotFound);
             }
-            
+
             return Ok(orders);
         }
+        
+        [HttpPut("markOrdersAsPaidByTable/{tableNumber}")]
+        public async Task<IActionResult> MarkOrdersAsPaidByTable(int tableNumber)
+        {
+            // Masa numarasına göre siparişleri getir
+            var orders = await _cashDAO.GetOrdersByTableNumber(tableNumber);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound(Message.NoReadyOrders);
+            }
+
+            // Siparişlerin durumunu "Ödendi" olarak güncelle
+            foreach (var order in orders)
+            {
+                order.Status = "Ödendi";
+            }
+
+            await _cashDAO.UpdateOrders(orders);
+
+            // Masanın durumunu "Boş" olarak güncelle
+            await _cashDAO.UpdateTableStatus(tableNumber, "Boş");
+
+            await _cashDAO.SaveChanges();
+            
+            return Ok(Message.OrdersMarkedAsPaid);
+        }
+
+
+        
     }
 }
