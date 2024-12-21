@@ -3,7 +3,17 @@ using adisyon.Models;
 
 namespace adisyon.Data
 {
-    public class KitchenDAO
+ public interface IKitchenDAO
+    {
+        Task<List<Orders>> GetOrdersByStatusAsync(string status);
+        Task<Orders> GetOrderByIdAsync(int orderId);
+        Task<Products> GetProductByIdAsync(int productId);
+        Task UpdateOrderAsync(Orders order);
+        Task AddOrderCashAsync(OrderCash orderCash);
+        Task SaveChangesAsync();
+    }
+        
+    public class KitchenDAO : IKitchenDAO
     {
         private readonly AdisyonDbContext _context;
 

@@ -3,7 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace adisyon.Data
 {
-    public class WaiterDAO
+    public interface IWaiterDAO
+        {
+            Task<List<Products>> GetAllProductsAsync();
+            Task<Products> GetProductByIdAsync(int productId);
+            Task<Tables> GetTableByNumberAsync(int tableNumber);
+            Task AddOrderAsync(Orders order);
+            Task<List<Orders>> GetOrdersByUserIdAsync(int userId);
+            Task UpdateTableAsync(Tables table);
+            Task SaveChangesAsync();
+        }
+    public class WaiterDAO : IWaiterDAO
     {
         private readonly AdisyonDbContext _context;
 

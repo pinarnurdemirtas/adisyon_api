@@ -8,12 +8,11 @@ namespace adisyon.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "mutfak")]
-
     public class KitchenController : ControllerBase
     {
-        private readonly KitchenDAO _kitchenDAO;
+        private readonly IKitchenDAO _kitchenDAO;
 
-        public KitchenController(KitchenDAO kitchenDAO)
+        public KitchenController(IKitchenDAO kitchenDAO)
         {
             _kitchenDAO = kitchenDAO;
         }
@@ -22,22 +21,26 @@ namespace adisyon.Controllers
         public async Task<IActionResult> GetPreparingOrders()
         {
             var orders = await _kitchenDAO.GetOrdersByStatusAsync("Hazırlanıyor");
+            if (orders == null || orders.Count == 0)
+                {
+                    return NotFound(Message.OrderNotFound);
+                }
             return Ok(orders);
         }
 
-        [HttpPost("updateStatus")]
+        [HttpPatch("updateStatus")]
         public async Task<IActionResult> UpdateOrderStatus([FromBody] int orderId)
         {
             var order = await _kitchenDAO.GetOrderByIdAsync(orderId);
             if (order == null)
             {
-                return NotFound(Message.OrderNotFound);
+                return NotFound("Sipariş bulunamadı.");
             }
 
             var product = await _kitchenDAO.GetProductByIdAsync(order.Product_id);
             if (product == null)
             {
-                return NotFound(Message.ProductsNotFound);
+                return NotFound("Ürün bulunamadı.");
             }
 
             order.Status = "Hazırlandı";

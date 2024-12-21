@@ -11,10 +11,10 @@ namespace adisyon.Controllers
     [Authorize(Roles = "garson")]
     public class WaiterController : ControllerBase
     {
-        private readonly WaiterDAO _waiterDAO;
+        private readonly IWaiterDAO _waiterDAO;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public WaiterController(WaiterDAO waiterDAO, IHttpContextAccessor httpContextAccessor)
+        public WaiterController(IWaiterDAO waiterDAO, IHttpContextAccessor httpContextAccessor)
         {
             _waiterDAO = waiterDAO;
             _httpContextAccessor = httpContextAccessor;
@@ -39,20 +39,19 @@ namespace adisyon.Controllers
             var userId = GetCurrentUserId();
             if (userId == 0)
             {
-                return Unauthorized(Message.UserIdNotFound);
+                return Unauthorized("User ID not found.");
             }
 
             var product = await _waiterDAO.GetProductByIdAsync(order.Product_id);
             if (product == null)
             {
-                return BadRequest(Message.ProductsNotFound);
+                return BadRequest("Product not found.");
             }
-            
 
             var table = await _waiterDAO.GetTableByNumberAsync(order.Table_number);
             if (table == null)
             {
-                return BadRequest(Message.TableNotFound);
+                return BadRequest("Table not found.");
             }
 
             var newOrder = new Orders
@@ -79,12 +78,11 @@ namespace adisyon.Controllers
             var userId = GetCurrentUserId();
             if (userId == 0)
             {
-                return Unauthorized(Message.UserIdNotFound);
+                return Unauthorized("User ID not found.");
             }
 
             var userOrders = await _waiterDAO.GetOrdersByUserIdAsync(userId);
             return Ok(userOrders);
         }
-
     }
 }

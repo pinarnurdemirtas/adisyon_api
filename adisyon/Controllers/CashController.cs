@@ -7,11 +7,11 @@ namespace adisyon.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "kasa")]
-
     public class CashController : ControllerBase
     {
-        private readonly CashDAO _cashDAO;
-        public CashController(CashDAO cashDAO)
+        private readonly ICashDAO _cashDAO;
+
+        public CashController(ICashDAO cashDAO)
         {
             _cashDAO = cashDAO;
         }
@@ -27,8 +27,8 @@ namespace adisyon.Controllers
 
             return Ok(orders);
         }
-        
-        [HttpPut("markOrdersAsPaidByTable/{tableNumber}")]
+
+        [HttpPatch("markOrdersAsPaidByTable/{tableNumber}")]
         public async Task<IActionResult> MarkOrdersAsPaidByTable(int tableNumber)
         {
             var orders = await _cashDAO.GetOrdersByTableNumber(tableNumber);
@@ -43,11 +43,9 @@ namespace adisyon.Controllers
             }
 
             await _cashDAO.UpdateOrders(orders);
-
             await _cashDAO.UpdateTableStatus(tableNumber, "Boş");
-
             await _cashDAO.SaveChanges();
-            
+
             return Ok(Message.OrdersMarkedAsPaid);
         }
 
@@ -62,6 +60,5 @@ namespace adisyon.Controllers
 
             return Ok(orders);
         }
-
     }
 }

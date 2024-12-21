@@ -3,7 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace adisyon.Data
 {
-    public class CashDAO
+    public interface ICashDAO
+    {
+        Task<List<OrderCash>> GetOrdersFromFullTables();
+        Task<List<OrderCash>> GetOrdersByTableNumber(int tableNumber);
+        Task UpdateOrders(IEnumerable<OrderCash> orders);
+        Task UpdateTableStatus(int tableNumber, string status);
+        Task<List<OrderCash>> GetPaidOrdersByDate(DateTime date);
+        Task SaveChanges();
+    }
+    
+    public class CashDAO : ICashDAO
     {
         private readonly AdisyonDbContext _context;
 

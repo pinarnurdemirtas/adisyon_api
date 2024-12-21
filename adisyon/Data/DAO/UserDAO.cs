@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace adisyon.Data
 {
-    public class UserDAO
+    public class UserDAO 
     {
         private readonly AdisyonDbContext _context;
 
