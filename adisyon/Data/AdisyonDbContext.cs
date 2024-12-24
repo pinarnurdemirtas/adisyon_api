@@ -2,12 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using adisyon.Models;
 namespace adisyon.Data;
 
-public partial  class AdisyonDbContext : DbContext
+public  class AdisyonDbContext : DbContext
 {
+    public AdisyonDbContext(DbContextOptions<AdisyonDbContext> options)
+        : base(options)
+    {
+    }
 
     public virtual DbSet<Products> Products { get; set; } 
     public virtual DbSet<Orders> Orders { get; set; } 
-    public virtual DbSet<OrderCash> Ordercash { get; set; } 
+    public virtual DbSet<OrderCash> Ordercash { get; set; }     
     public virtual DbSet<Users> Users { get; set; } 
     public virtual DbSet<Tables> Tables { get; set; } 
 

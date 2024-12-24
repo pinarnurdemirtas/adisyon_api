@@ -16,7 +16,7 @@ namespace adisyon.Controllers
             _cashDAO = cashDAO;
         }
 
-        [HttpGet("ordersFromOccupiedTables")]
+        [HttpGet("fullTables")]
         public async Task<IActionResult> GetOrdersFromOccupiedTables()
         {
             var orders = await _cashDAO.GetOrdersFromFullTables();
@@ -49,7 +49,7 @@ namespace adisyon.Controllers
             return Ok(Message.OrdersMarkedAsPaid);
         }
 
-        [HttpGet("paidOrdersByDate")]
+        [HttpGet("ordersByDate")]
         public async Task<IActionResult> GetPaidOrdersByDate([FromQuery] DateTime date)
         {
             var orders = await _cashDAO.GetPaidOrdersByDate(date);

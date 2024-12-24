@@ -16,14 +16,14 @@ public class MenuController : ControllerBase
         _menuDao = menuDao;
     }
 
-    [HttpGet]
+    [HttpGet("get/all")]
     public async Task<ActionResult<IEnumerable<Products>>> GetUrun()
     {
         var products = await _menuDao.GetAllAsync();
         return Ok(products);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("get/{id}")]
     public async Task<ActionResult<Products>> GetUrun(int id)
     {
         var product = await _menuDao.GetByIdAsync(id);
@@ -31,14 +31,14 @@ public class MenuController : ControllerBase
         return Ok(product);
     }
 
-    [HttpPost]
+    [HttpPost("post")]
     public async Task<ActionResult<Products>> PostUrun(Products product)
     {
         await _menuDao.AddAsync(product);
         return CreatedAtAction(nameof(GetUrun), new { id = product.Id }, product);
     }
 
-    [HttpPut("{id}")]
+    [HttpPatch("patch/{id}")]
     public async Task<IActionResult> PutUrun(int id, Products product)
     {
         if (id != product.Id) return BadRequest();
@@ -55,7 +55,7 @@ public class MenuController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUrun(int id)
     {
         var exists = await _menuDao.ExistsAsync(id);

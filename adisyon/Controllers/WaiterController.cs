@@ -39,19 +39,19 @@ namespace adisyon.Controllers
             var userId = GetCurrentUserId();
             if (userId == 0)
             {
-                return Unauthorized("User ID not found.");
+                return Unauthorized(Message.UserIdNotFound);
             }
 
             var product = await _waiterDAO.GetProductByIdAsync(order.Product_id);
             if (product == null)
             {
-                return BadRequest("Product not found.");
+                return BadRequest(Message.ProductsNotFound);
             }
 
             var table = await _waiterDAO.GetTableByNumberAsync(order.Table_number);
             if (table == null)
             {
-                return BadRequest("Table not found.");
+                return BadRequest(Message.TableNotFound);
             }
 
             var newOrder = new Orders
@@ -68,17 +68,17 @@ namespace adisyon.Controllers
             await _waiterDAO.AddOrderAsync(newOrder);
             table.Table_status = "Dolu";
             await _waiterDAO.UpdateTableAsync(table);
-
+    
             return Ok(newOrder);
         }
 
-        [HttpGet("orders")]
+        [HttpGet("waiterTables")]
         public async Task<IActionResult> GetUserOrders()
         {
             var userId = GetCurrentUserId();
             if (userId == 0)
             {
-                return Unauthorized("User ID not found.");
+                return Unauthorized(Message.UserIdNotFound);
             }
 
             var userOrders = await _waiterDAO.GetOrdersByUserIdAsync(userId);

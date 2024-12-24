@@ -22,9 +22,9 @@ namespace adisyon.Controllers
         {
             var orders = await _kitchenDAO.GetOrdersByStatusAsync("Hazırlanıyor");
             if (orders == null || orders.Count == 0)
-                {
-                    return NotFound(Message.OrderNotFound);
-                }
+            {
+                return NotFound(Message.OrderNotFound);
+            }
             return Ok(orders);
         }
 
@@ -34,13 +34,13 @@ namespace adisyon.Controllers
             var order = await _kitchenDAO.GetOrderByIdAsync(orderId);
             if (order == null)
             {
-                return NotFound("Sipariş bulunamadı.");
+                return NotFound(Message.OrderNotFound);
             }
 
             var product = await _kitchenDAO.GetProductByIdAsync(order.Product_id);
             if (product == null)
             {
-                return NotFound("Ürün bulunamadı.");
+                return NotFound(Message.ProductsNotFound);
             }
 
             order.Status = "Hazırlandı";

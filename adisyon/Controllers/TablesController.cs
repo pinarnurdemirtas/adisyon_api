@@ -15,7 +15,7 @@ namespace adisyon.Controllers
             _tablesDAO = tablesDAO;
         }
 
-        [HttpPost("add")]
+        [HttpPost("post")]
         public async Task<IActionResult> AddTable([FromBody] Tables table)
         {
             if (table == null)
@@ -39,7 +39,7 @@ namespace adisyon.Controllers
             return NoContent(); 
         }
 
-        [HttpGet("all")]
+        [HttpGet("get")]
         public async Task<IActionResult> GetAllTables()
         {
             var tables = await _tablesDAO.GetAllTablesAsync();

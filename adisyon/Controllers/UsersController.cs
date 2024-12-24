@@ -26,7 +26,7 @@ namespace adisyon.Controllers
                 return BadRequest(Message.InvalidLogin);
             }
 
-            var user = await _userDao.GetUserByUsername(loginUser.Username);
+            var user = await _userDao.GetUserByUsername(loginUser.Username);    
             if (user == null)
             {
                 return Unauthorized(Message.UserNotFound);

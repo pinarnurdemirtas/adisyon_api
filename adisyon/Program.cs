@@ -14,9 +14,10 @@ builder.Services.AddDbContext<AdisyonDbContext>(options =>
 
 builder.Services.AddScoped<adisyon.Security>();
 builder.Services.AddScoped<UserDAO>(); 
-builder.Services.AddScoped<WaiterDAO>(); 
-builder.Services.AddScoped<KitchenDAO>(); 
-builder.Services.AddScoped<CashDAO>();
+builder.Services.AddScoped<IWaiterDAO, WaiterDAO>(); 
+builder.Services.AddScoped<IKitchenDAO, KitchenDAO>(); 
+builder.Services.AddScoped<ICashDAO, CashDAO>();
+builder.Services.AddScoped<TablesDAO>();
 builder.Services.AddScoped<MenuDAO>();
 
 
