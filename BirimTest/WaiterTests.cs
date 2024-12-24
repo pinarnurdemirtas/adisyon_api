@@ -43,7 +43,7 @@ namespace BirimTesti
         [Test]
         public async Task CreateOrder_WhenProductNotFound_ReturnsBadRequest()
         {
-            // Arrange
+
             var order = new CreateOrder { Product_id = 1, Quantity = 2, Table_number = 3 };
             _waiterDaoMock.Setup(dao => dao.GetProductByIdAsync(order.Product_id)).ReturnsAsync((Products)null); // Simulating product not found
 
