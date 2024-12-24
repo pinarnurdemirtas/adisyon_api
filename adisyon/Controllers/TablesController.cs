@@ -8,9 +8,9 @@ namespace adisyon.Controllers
     [Route("api/[controller]")]
     public class TablesController : ControllerBase
     {
-        private readonly TablesDAO _tablesDAO;
+        private readonly ITablesDAO _tablesDAO;
 
-        public TablesController(TablesDAO tablesDAO)
+        public TablesController(ITablesDAO tablesDAO)
         {
             _tablesDAO = tablesDAO;
         }
@@ -23,14 +23,14 @@ namespace adisyon.Controllers
                 return BadRequest(Message.TableNotFound);
             }
 
-            var newTable = await _tablesDAO.AddTableAsync(table);
+            var newTable = await _tablesDAO.AddTable(table);
             return CreatedAtAction(nameof(GetTableByNumber), new { tableNumber = newTable.Table_number }, newTable);
         }
 
         [HttpDelete("delete/{tableNumber}")]
         public async Task<IActionResult> DeleteTable(int tableNumber)
         {
-            var result = await _tablesDAO.DeleteTableAsync(tableNumber);
+            var result = await _tablesDAO.DeleteTable(tableNumber);
             if (!result)
             {
                 return NotFound(Message.TableNotFound);
@@ -42,14 +42,14 @@ namespace adisyon.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> GetAllTables()
         {
-            var tables = await _tablesDAO.GetAllTablesAsync();
+            var tables = await _tablesDAO.GetAllTables();
             return Ok(tables);
         }
 
         [HttpGet("{tableNumber}")]
         public async Task<IActionResult> GetTableByNumber(int tableNumber)
         {
-            var table = await _tablesDAO.GetTableByNumberAsync(tableNumber);
+            var table = await _tablesDAO.GetTableByNumber(tableNumber);
             if (table == null)
             {
                 return NotFound(Message.TableNotFound);

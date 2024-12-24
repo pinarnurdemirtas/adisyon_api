@@ -17,9 +17,6 @@ public  class AdisyonDbContext : DbContext
 
     
 
-    
-    
-    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Orders>()

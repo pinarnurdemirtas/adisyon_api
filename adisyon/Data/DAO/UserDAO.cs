@@ -3,7 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace adisyon.Data
 {
-    public class UserDAO 
+    public interface IUserDAO
+    {
+        Task<Users> GetUserByUsername(string username);
+        Task<Users> GetUserById(int id);
+        Task AddUser(Users user);
+        Task DeleteUser(Users user);
+        Task SaveChanges();
+    }
+    public class UserDAO : IUserDAO
     {
         private readonly AdisyonDbContext _context;
 

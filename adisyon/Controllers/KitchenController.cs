@@ -20,7 +20,7 @@ namespace adisyon.Controllers
         [HttpGet("orders")]
         public async Task<IActionResult> GetPreparingOrders()
         {
-            var orders = await _kitchenDAO.GetOrdersByStatusAsync("Hazırlanıyor");
+            var orders = await _kitchenDAO.GetOrdersByStatus("Hazırlanıyor");
             if (orders == null || orders.Count == 0)
             {
                 return NotFound(Message.OrderNotFound);
@@ -31,20 +31,20 @@ namespace adisyon.Controllers
         [HttpPatch("updateStatus")]
         public async Task<IActionResult> UpdateOrderStatus([FromBody] int orderId)
         {
-            var order = await _kitchenDAO.GetOrderByIdAsync(orderId);
+            var order = await _kitchenDAO.GetOrderById(orderId);
             if (order == null)
             {
                 return NotFound(Message.OrderNotFound);
             }
 
-            var product = await _kitchenDAO.GetProductByIdAsync(order.Product_id);
+            var product = await _kitchenDAO.GetProductById(order.Product_id);
             if (product == null)
             {
                 return NotFound(Message.ProductsNotFound);
             }
 
             order.Status = "Hazırlandı";
-            await _kitchenDAO.UpdateOrderAsync(order);
+            await _kitchenDAO.UpdateOrder(order);
 
             var orderCash = new OrderCash
             {
@@ -58,8 +58,8 @@ namespace adisyon.Controllers
                 Status = order.Status,
             };
 
-            await _kitchenDAO.AddOrderCashAsync(orderCash);
-            await _kitchenDAO.SaveChangesAsync();
+            await _kitchenDAO.AddOrderCash(orderCash);
+            await _kitchenDAO.SaveChanges();
 
             return Ok(orderCash);
         }

@@ -1,4 +1,4 @@
-using adisyon.Data.Repositories;
+using adisyon.Data;
 using adisyon.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,9 +9,9 @@ namespace adisyon.Controllers;
 
 public class MenuController : ControllerBase
 {
-    private readonly MenuDAO _menuDao;
+    private readonly IMenuDAO _menuDao;
 
-    public MenuController(MenuDAO menuDao)
+    public MenuController(IMenuDAO menuDao)
     {
         _menuDao = menuDao;
     }
@@ -19,14 +19,14 @@ public class MenuController : ControllerBase
     [HttpGet("get/all")]
     public async Task<ActionResult<IEnumerable<Products>>> GetUrun()
     {
-        var products = await _menuDao.GetAllAsync();
+        var products = await _menuDao.GetAll();
         return Ok(products);
     }
 
     [HttpGet("get/{id}")]
     public async Task<ActionResult<Products>> GetUrun(int id)
     {
-        var product = await _menuDao.GetByIdAsync(id);
+        var product = await _menuDao.GetById(id);
         if (product == null) return NotFound();
         return Ok(product);
     }
@@ -34,7 +34,7 @@ public class MenuController : ControllerBase
     [HttpPost("post")]
     public async Task<ActionResult<Products>> PostUrun(Products product)
     {
-        await _menuDao.AddAsync(product);
+        await _menuDao.Add(product);
         return CreatedAtAction(nameof(GetUrun), new { id = product.Id }, product);
     }
 
@@ -45,11 +45,11 @@ public class MenuController : ControllerBase
 
         try
         {
-            await _menuDao.UpdateAsync(product);
+            await _menuDao.Update(product);
         }
         catch (Exception)
         {
-            if (!await _menuDao.ExistsAsync(id)) return NotFound();
+            if (!await _menuDao.Exists(id)) return NotFound();
             else throw;
         }
         return NoContent();
@@ -58,10 +58,10 @@ public class MenuController : ControllerBase
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUrun(int id)
     {
-        var exists = await _menuDao.ExistsAsync(id);
+        var exists = await _menuDao.Exists(id);
         if (!exists) return NotFound();
 
-        await _menuDao.DeleteAsync(id);
+        await _menuDao.Delete(id);
         return NoContent();
     }
 }

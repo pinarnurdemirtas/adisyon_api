@@ -9,10 +9,10 @@ namespace adisyon.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserDAO _userDao;
+        private readonly IUserDAO _userDao;
         private readonly Security _security;
 
-        public UsersController(UserDAO userDao, Security security)
+        public UsersController(IUserDAO userDao, Security security)
         {
             _userDao = userDao;
             _security = security;

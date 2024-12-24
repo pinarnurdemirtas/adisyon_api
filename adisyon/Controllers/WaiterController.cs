@@ -29,7 +29,7 @@ namespace adisyon.Controllers
         [HttpGet("menu")]
         public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _waiterDAO.GetAllProductsAsync();
+            var products = await _waiterDAO.GetAllProducts();
             return Ok(products);
         }
 
@@ -42,13 +42,13 @@ namespace adisyon.Controllers
                 return Unauthorized(Message.UserIdNotFound);
             }
 
-            var product = await _waiterDAO.GetProductByIdAsync(order.Product_id);
+            var product = await _waiterDAO.GetProductById(order.Product_id);
             if (product == null)
             {
                 return BadRequest(Message.ProductsNotFound);
             }
 
-            var table = await _waiterDAO.GetTableByNumberAsync(order.Table_number);
+            var table = await _waiterDAO.GetTableByNumber(order.Table_number);
             if (table == null)
             {
                 return BadRequest(Message.TableNotFound);
@@ -65,9 +65,9 @@ namespace adisyon.Controllers
                 User_id = userId
             };
 
-            await _waiterDAO.AddOrderAsync(newOrder);
+            await _waiterDAO.AddOrder(newOrder);
             table.Table_status = "Dolu";
-            await _waiterDAO.UpdateTableAsync(table);
+            await _waiterDAO.UpdateTable(table);
     
             return Ok(newOrder);
         }
@@ -81,7 +81,7 @@ namespace adisyon.Controllers
                 return Unauthorized(Message.UserIdNotFound);
             }
 
-            var userOrders = await _waiterDAO.GetOrdersByUserIdAsync(userId);
+            var userOrders = await _waiterDAO.GetOrdersByUserId(userId);
             return Ok(userOrders);
         }
     }

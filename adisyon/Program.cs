@@ -3,22 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using adisyon.Data;
 using System.Text;
-using adisyon.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Bağlantı dizesini appsettings.json'dan alıyoruz
 builder.Services.AddDbContext<AdisyonDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), 
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 builder.Services.AddScoped<adisyon.Security>();
-builder.Services.AddScoped<UserDAO>(); 
+builder.Services.AddScoped<IUserDAO, UserDAO>(); 
 builder.Services.AddScoped<IWaiterDAO, WaiterDAO>(); 
 builder.Services.AddScoped<IKitchenDAO, KitchenDAO>(); 
 builder.Services.AddScoped<ICashDAO, CashDAO>();
-builder.Services.AddScoped<TablesDAO>();
-builder.Services.AddScoped<MenuDAO>();
+builder.Services.AddScoped<ITablesDAO, TablesDAO>();
+builder.Services.AddScoped<IMenuDAO, MenuDAO>();
 
 
 builder.Services.AddAuthorization();
@@ -53,7 +51,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    // Swagger'a JWT Authentication ekliyoruz
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,

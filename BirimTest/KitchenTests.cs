@@ -23,7 +23,7 @@ namespace BirimTesti
         public async Task GetPreparingOrders_WhenNoOrders_ReturnsNotFound()
         {
             // Arrange
-            _kitchenDaoMock.Setup(dao => dao.GetOrdersByStatusAsync("Hazırlanıyor")).ReturnsAsync(new List<Orders>());
+            _kitchenDaoMock.Setup(dao => dao.GetOrdersByStatus("Hazırlanıyor")).ReturnsAsync(new List<Orders>());
 
             // Act
             var result = await _controller.GetPreparingOrders();
@@ -37,7 +37,7 @@ namespace BirimTesti
         {
             // Arrange
             var orders = new List<Orders> { new Orders { Order_id = 1, Status = "Hazırlanıyor" } };
-            _kitchenDaoMock.Setup(dao => dao.GetOrdersByStatusAsync("Hazırlanıyor")).ReturnsAsync(orders);
+            _kitchenDaoMock.Setup(dao => dao.GetOrdersByStatus("Hazırlanıyor")).ReturnsAsync(orders);
 
             // Act
             var result = await _controller.GetPreparingOrders();
@@ -53,7 +53,7 @@ namespace BirimTesti
         {
             // Arrange
             int orderId = 1;
-            _kitchenDaoMock.Setup(dao => dao.GetOrderByIdAsync(orderId)).ReturnsAsync((Orders)null);
+            _kitchenDaoMock.Setup(dao => dao.GetOrderById(orderId)).ReturnsAsync((Orders)null);
 
             // Act
             var result = await _controller.UpdateOrderStatus(orderId);
@@ -68,8 +68,8 @@ namespace BirimTesti
 
             int orderId = 1;
             var mockOrder = new Orders { Order_id = orderId, Product_id = 1, Quantity = 2, Status = "Hazırlanıyor" };
-            _kitchenDaoMock.Setup(dao => dao.GetOrderByIdAsync(orderId)).ReturnsAsync(mockOrder);
-            _kitchenDaoMock.Setup(dao => dao.GetProductByIdAsync(mockOrder.Product_id)).ReturnsAsync((Products)null);
+            _kitchenDaoMock.Setup(dao => dao.GetOrderById(orderId)).ReturnsAsync(mockOrder);
+            _kitchenDaoMock.Setup(dao => dao.GetProductById(mockOrder.Product_id)).ReturnsAsync((Products)null);
 
             // Act
             var result = await _controller.UpdateOrderStatus(orderId);
